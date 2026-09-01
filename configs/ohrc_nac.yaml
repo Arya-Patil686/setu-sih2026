@@ -1,0 +1,29 @@
+name: ohrc_nac
+description: >
+  OHRC (0.25 m panchromatic pushbroom) against LRO NAC (0.5-2 m). The headline case.
+  Scale ratio is 2-8x, so pre-alignment carries most of the load and the deep track
+  runs at full tile size. OHRC is a line-scan sensor with documented attitude jitter,
+  so the per-row jitter spline is mandatory here.
+
+prealign:
+  gsd_scale_k: 1.0
+  apply_parallax: true      # OHRC stereo uses +/-25 deg pitch; parallax is not optional
+  max_residual_px: 800.0
+
+illum:
+  reilluminate: true
+  structural: pc
+
+match:
+  deep_matcher: auto
+  tile_size: 640
+  agreement_tau_px: 2.0
+
+model:
+  global_model: auto
+  local_model: tps
+  jitter_model: true        # pushbroom attitude jitter, order of the image GSD
+
+uniform:
+  lattice: [8, 8]
+  target_points: 500

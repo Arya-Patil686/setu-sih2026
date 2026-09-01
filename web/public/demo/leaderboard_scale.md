@@ -1,0 +1,18 @@
+### Scale sweep (GSD ratio 1x-16x)
+
+| Method | Tie-point RMSE (px) | Model RMSE vs truth (px) | Precision @3px | Inlier ratio | Inliers | Coverage @150 pts | Clark-Evans R @150 | Time (s) |
+|---|---|---|---|---|---|---|---|---|
+| setu_no_gate <sub>(4/5 failed)</sub> | 0.395 | 0.066 | 100.0% | 100.0% | 196 | 0.75 | 0.72 | 5.3 |
+| setu_no_uniform <sub>(4/5 failed)</sub> | 0.356 | 0.075 | 100.0% | 100.0% | 528 | 0.66 | 0.72 | 4.2 |
+| **setu_full** <sub>(4/5 failed)</sub> | 0.350 | 0.075 | 100.0% | 100.0% | 211 | 0.78 | 0.81 | 5.5 |
+| setu_no_refine <sub>(4/5 failed)</sub> | 0.344 | 0.096 | 100.0% | 100.0% | 221 | 0.81 | 0.82 | 4.4 |
+| setu_no_reillum <sub>(4/5 failed)</sub> | 0.638 | 0.101 | 100.0% | 100.0% | 125 | 0.72 | 0.89 | 16.5 |
+| sift | 2.337<br><sub>[0.918, 4.096]</sub> | 1.873<br><sub>[0.444, 3.729]</sub> | 62.5%<br><sub>[31.5%, 88.4%]</sub> | 72.6%<br><sub>[53.4%, 88.4%]</sub> | 65<br><sub>[36, 104]</sub> | 0.44<br><sub>[0.34, 0.55]</sub> | 0.72<br><sub>[0.62, 0.82]</sub> | 0.2<br><sub>[0.0, 0.4]</sub> |
+| intfeat | 2.425<br><sub>[1.083, 4.250]</sub> | 1.888<br><sub>[0.458, 3.837]</sub> | 53.9%<br><sub>[26.9%, 76.4%]</sub> | 62.0%<br><sub>[45.9%, 77.4%]</sub> | 90<br><sub>[37, 177]</sub> | 0.45<br><sub>[0.36, 0.55]</sub> | 0.76<br><sub>[0.64, 0.88]</sub> | 0.4<br><sub>[0.1, 0.7]</sub> |
+| loftr | 307.232<br><sub>[1.342, 837.846]</sub> | 385.335<br><sub>[0.879, 994.748]</sub> | 42.6%<br><sub>[4.1%, 81.0%]</sub> | 48.8%<br><sub>[15.6%, 82.0%]</sub> | 766<br><sub>[10, 1994]</sub> | 0.45<br><sub>[0.12, 0.78]</sub> | 0.98<br><sub>[0.87, 1.04]</sub> | 29.4<br><sub>[1.7, 70.3]</sub> |
+| rift | 152.092<br><sub>[0.766, 245.853]</sub> | 438.102<br><sub>[0.237, 1114.948]</sub> | 31.3%<br><sub>[0.0%, 93.8%]</sub> | 40.4%<br><sub>[6.7%, 74.2%]</sub> | 23<br><sub>[1, 64]</sub> | 0.20<br><sub>[0.03, 0.52]</sub> | 0.36<br><sub>[0.23, 0.59]</sub> | 1.9<br><sub>[0.5, 4.1]</sub> |
+| cfog | 590.561<br><sub>[147.953, 1137.157]</sub> | 689.810<br><sub>[178.947, 1328.719]</sub> | 19.1%<br><sub>[0.0%, 57.4%]</sub> | 48.0%<br><sub>[23.0%, 73.0%]</sub> | 123<br><sub>[59, 187]</sub> | 0.27<br><sub>[0.10, 0.55]</sub> | 0.57<br><sub>[0.37, 0.92]</sub> | 0.6<br><sub>[0.4, 0.8]</sub> |
+| orb | 383.337<br><sub>[1.791, 846.363]</sub> | 1431.203<br><sub>[1.309, 3877.757]</sub> | 36.4%<br><sub>[6.1%, 66.8%]</sub> | 47.5%<br><sub>[26.4%, 70.0%]</sub> | 50<br><sub>[5, 126]</sub> | 0.19<br><sub>[0.06, 0.38]</sub> | 0.47<br><sub>[0.28, 0.66]</sub> | 0.0<br><sub>[0.0, 0.1]</sub> |
+| disk_lightglue | 300.755<br><sub>[1.943, 605.805]</sub> | 1768.349<br><sub>[10.540, 4844.485]</sub> | 40.1%<br><sub>[3.0%, 77.2%]</sub> | 64.4%<br><sub>[40.0%, 86.8%]</sub> | 405<br><sub>[3, 1029]</sub> | 0.29<br><sub>[0.04, 0.55]</sub> | 0.71<br><sub>[0.37, 1.03]</sub> | 5.5<br><sub>[0.5, 15.0]</sub> |
+
+**Tie-point RMSE** is the error of the delivered correspondences against exact truth, over inliers, and it is the number the problem statement's sub-pixel requirement refers to. **Model RMSE** is the error of the fitted transform; it falls roughly as the square root of the point count, so a method returning thousands of noisy points can score well on it while its individual tie points are useless. Uniformity is measured after subsampling every method to the same 150 points, because coverage of an 8x8 lattice is otherwise a measure of density rather than of distribution. Square brackets are bootstrap 95% confidence intervals over pairs.

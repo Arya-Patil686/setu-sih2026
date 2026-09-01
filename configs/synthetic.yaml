@@ -1,0 +1,29 @@
+name: synthetic
+description: >
+  The controlled benchmark of Section 6.2. Both images are rendered from the same DEM
+  under a known warp, so registration error is measured against truth rather than
+  against a fitted model. Pre-alignment is skipped - the pair is already co-gridded.
+
+prealign:
+  sensor_model_tier: B
+  apply_parallax: false
+  max_residual_px: 2000.0
+  raise_on_acceptance_failure: false
+
+illum:
+  reilluminate: true
+  structural: pc
+
+match:
+  tile_size: 512
+  agreement_tau_px: 2.0
+
+model:
+  global_model: affine
+  local_model: none
+  jitter_model: false
+  feedback_s5_to_s1: false
+
+uniform:
+  lattice: [6, 6]
+  target_points: 300

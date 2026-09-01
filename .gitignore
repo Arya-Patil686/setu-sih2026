@@ -1,0 +1,17 @@
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+.DS_Store
+
+runs/
+data/
+weights/
+*.log
+
+web/node_modules/
+web/dist/
+
+# The demo bundle is the evidence the published page renders, so it is committed.
+!web/public/demo/

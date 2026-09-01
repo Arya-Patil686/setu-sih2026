@@ -1,0 +1,26 @@
+name: tmc2_nac
+description: >
+  TMC-2 (5 m, three views) against LRO NAC. A 10-20x scale ratio, so the reference is
+  the image that gets downsampled and the working GSD sits at TMC-2 scale. The
+  fore/nadir/aft triple also gives free, real viewpoint variation over the same ground.
+
+prealign:
+  gsd_scale_k: 1.0
+  apply_parallax: true
+
+illum:
+  reilluminate: true
+  structural: pc
+
+match:
+  tile_size: 640
+  agreement_tau_px: 2.0
+
+model:
+  global_model: auto        # emission difference between fore and aft forces projective
+  local_model: tps
+  jitter_model: true
+
+uniform:
+  lattice: [8, 8]
+  target_points: 400

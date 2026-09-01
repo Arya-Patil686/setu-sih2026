@@ -1,0 +1,35 @@
+name: iirs_tc
+description: >
+  IIRS (80 m imaging spectrometer) against a resolution-appropriate reference - Kaguya TC
+  ortho at ~10 m or an SLDEM2015 hillshade at 59 m, resampled to ~80 m. Matching 80 m
+  against 0.5 m NAC at native resolution is not a sensible task and is not attempted.
+  This is the cross-modality stress case, not the headline.
+
+prealign:
+  gsd_scale_k: 1.0
+  apply_parallax: false     # near-nadir, 80 m pixels; parallax is far below one pixel
+
+illum:
+  reilluminate: true
+  structural: pc            # PC copes better with the lower SNR of the spectrometer
+  pc_k: 3.0                 # PC is not robust to noise; raise the rejection threshold
+  pc_noise_adaptive: true
+  iirs_band_lo_nm: 900.0
+  iirs_band_hi_nm: 1600.0
+  iirs_destripe: true
+
+match:
+  lowe_ratio: 0.88
+  agreement_tau_px: 2.5
+
+refine:
+  max_sigma_px: 0.8         # 0.8 px at 80 m GSD is 64 m; honest for this pairing
+
+model:
+  global_model: similarity
+  local_model: poly2
+  jitter_model: false
+
+uniform:
+  lattice: [6, 6]
+  target_points: 200

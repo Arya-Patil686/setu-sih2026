@@ -1,0 +1,86 @@
+# Data manifest for SETU.
+#
+# The problem statement's dataset link is marked TBD, so this assembles the archive that
+# actually exists. Nothing here is fetched automatically without asking: PRADAN requires
+# registration and a browser session, and the OHRC archive alone is over 200 GB, of which
+# a few gigabytes are needed. Entries marked `manual: true` print instructions instead of
+# downloading, so the manifest stays the single record of what a run was built from.
+
+version: 1
+
+sites:
+  # Independent published ground truth exists here, which makes it the one site where a
+  # real-data result can be checked against something other than itself.
+  - id: shiv_shakti
+    name: Chandrayaan-3 landing site (Shiv Shakti Point)
+    lat: -69.373
+    lon: 32.319
+    why: >
+      Published OHRC stereo work reports crater tie-point RMSD of 12.3 m here, and a
+      LROC NAC DTM covers it, so re-illumination can be driven by a 3 m terrain model
+      rather than by 59 m SLDEM.
+  - id: mare_equatorial
+    name: Equatorial mare reference site
+    lat: 2.5
+    lon: 23.4
+    why: Low relief and sparse cratering - the case where structural matchers run out of texture.
+  - id: highland
+    name: Southern highland site
+    lat: -41.0
+    lon: 15.5
+    why: Heavy cratering and strong relief - the case where cast shadows dominate appearance.
+
+sources:
+  - id: ch2_ohrc
+    manual: true
+    portal: https://pradan.issdc.gov.in/ch2/
+    browse: https://chmapbrowse.issdc.gov.in/
+    want: 4-6 OHRC Level-1 products across the three sites
+    note: >
+      Requires a PRADAN account. Download the SPICE kernel set from the same portal even
+      if Tier A is never enabled - the illumination geometry alone justifies it.
+
+  - id: ch2_tmc2
+    manual: true
+    portal: https://pradan.issdc.gov.in/ch2/
+    want: 4-6 TMC-2 Level-1 products, including one fore/nadir/aft triple over one site
+    note: >
+      The fore/nadir/aft triple is free, real viewpoint variation over identical ground,
+      acquired within one pass. It is the cleanest viewpoint test available anywhere.
+
+  - id: ch2_iirs
+    manual: true
+    portal: https://pradan.issdc.gov.in/ch2/
+    want: 3-4 IIRS Level-1 PDS4 cubes over ground also covered by TMC-2
+
+  - id: lro_nac
+    manual: true
+    portal: https://ode.rsl.wustl.edu/moon/
+    mirror: https://lroc.im-ldi.com/images/downloads
+    want: Map-projected NAC products over each site
+    note: >
+      Prefer scenes whose solar elevation differs substantially from the Chandrayaan-2
+      acquisitions. That is the hard case, and it is the one worth being measured on.
+
+  - id: nac_dtm
+    manual: true
+    portal: https://ode.rsl.wustl.edu/moon/
+    want: NAC_DTM_VIKRAMSITE1 and any other DTM covering a chosen site
+    note: ~3 m/px, registered to LOLA at 1.85 m RMS. The best re-illumination input available.
+
+  - id: sldem2015
+    url: https://imbrium.mit.edu/DATA/SLDEM2015/TILES/FLOAT_IMG/
+    want: 1 x 1 degree tiles covering each site, plus the global downsampled version
+    resolution_ppd: 512
+    note: The workhorse shape model. 512 ppd is about 59 m/px, with 3-4 m vertical accuracy.
+
+  - id: kaguya_tc
+    manual: true
+    portal: https://darts.isas.jaxa.jp/planet/pdap/selene/
+    want: TC ortho and DEM over each site
+    note: ~10 m ortho. The resolution-appropriate reference for IIRS and a good partner for TMC-2.
+
+  - id: lroc_wac
+    url: https://pds.lroc.asu.edu/data/LRO-L-LROC-5-RDR-V1.0/LROLRC_2001/EXTRAS/BROWSE/WAC_GLOBAL/
+    want: Global mosaic, ~100 m
+    note: Coarse reference for IIRS-scale work.

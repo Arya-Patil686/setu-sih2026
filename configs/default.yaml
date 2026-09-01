@@ -1,0 +1,62 @@
+name: default
+description: Baseline SETU settings. Every experiment file overrides this one.
+seed: 26166
+device: auto
+
+prealign:
+  gsd_scale_k: 1.0
+  polar_lat_deg: 60.0
+  apply_parallax: true
+  sensor_model_tier: auto
+  max_residual_px: 500.0
+  max_size_px: 4096
+
+illum:
+  reilluminate: true
+  albedo: 0.12
+  shadow_method: horizon
+  structural: pc
+  pc_k: 2.0
+  pc_noise_adaptive: true
+
+match:
+  track_a: true
+  track_b: true
+  deep_matcher: auto
+  tile_size: 640
+  tile_overlap: 0.5
+  agreement_tau_px: 2.0
+  sharpness_peak_ratio: 1.5
+  sharpness_peak_min: 0.4
+  lowe_ratio: 0.85
+
+refine:
+  patch: 64
+  upsample_factor: 50
+  lsm: true
+  max_sigma_px: 0.5
+
+model:
+  global_model: auto
+  local_model: tps
+  jitter_model: true
+  feedback_s5_to_s1: true
+  feedback_max_iters: 1
+
+uniform:
+  lattice: [8, 8]
+  auto_lattice: true
+  target_points: 400
+  reseed: true
+  reseed_passes: 2
+  coverage_target: 0.90
+
+product:
+  resample: lanczos
+  write_report: true
+  write_blink_gif: true
+
+eval:
+  bootstrap_n: 1000
+  success_thresholds_px: [1.0, 3.0, 5.0, 10.0]
+  loocv: true
