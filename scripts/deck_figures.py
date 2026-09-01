@@ -11,11 +11,12 @@ from __future__ import annotations
 from pathlib import Path
 
 import matplotlib
+
 matplotlib.use("Agg")
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.patches import Circle, FancyArrowPatch, FancyBboxPatch
+from matplotlib.patches import FancyArrowPatch, FancyBboxPatch
 
 INK = "#12233d"
 BLUE = "#0e7fbf"
@@ -65,7 +66,8 @@ def illumination_story(path, demo_dir: Path, ncc_opposite: float, ncc_reillum: f
     panel(0, "illum_east.png", "Sun from east", "elevation 18°")
     panel(1, "illum_west.png", "Sun from west", "elevation 18°")
 
-    ax = fig.add_subplot(gs[0, 2]); ax.axis("off")
+    ax = fig.add_subplot(gs[0, 2])
+    ax.axis("off")
     ax.text(0.5, 0.62, "correlation", ha="center", va="center", fontsize=7.6, color=MUTED)
     ax.text(0.5, 0.44, f"{ncc_opposite:+.3f}", ha="center", va="center",
             fontsize=15, color=ACCENT, fontweight="bold")
@@ -75,7 +77,8 @@ def illumination_story(path, demo_dir: Path, ncc_opposite: float, ncc_reillum: f
     panel(3, "hard_sun_source.png", "CH-2 source", "its own Sun")
     panel(4, "hard_sun_rendered.png", "Reference, re-lit", "at the source's Sun", edge=GREEN)
 
-    ax = fig.add_subplot(gs[0, 5]); ax.axis("off")
+    ax = fig.add_subplot(gs[0, 5])
+    ax.axis("off")
     ax.text(0.5, 0.62, "correlation", ha="center", va="center", fontsize=7.6, color=MUTED)
     ax.text(0.5, 0.44, f"{ncc_reillum:+.3f}", ha="center", va="center",
             fontsize=15, color=GREEN, fontweight="bold")
@@ -98,7 +101,9 @@ def illumination_story(path, demo_dir: Path, ncc_opposite: float, ncc_reillum: f
 def variation_map(path) -> Path:
     """Three named variations, and which discipline answers each."""
     fig, ax = plt.subplots(figsize=(6.0, 2.05), facecolor="white")
-    ax.set_xlim(0, 3); ax.set_ylim(0, 1); ax.axis("off")
+    ax.set_xlim(0, 3)
+    ax.set_ylim(0, 1)
+    ax.axis("off")
 
     cols = [
         ("SCALE", "up to 160x", "GEOMETRY", "ortho-project both\nat one GSD", BLUE),
@@ -191,7 +196,9 @@ def stack_chips(path) -> Path:
         ("Serve / ship", ["FastAPI", "React", "Vite", "Docker", "CI"]),
     ]
     fig, ax = plt.subplots(figsize=(6.35, 2.28), facecolor="white")
-    ax.set_xlim(0, 10.6); ax.set_ylim(0, len(groups)); ax.axis("off")
+    ax.set_xlim(0, 10.6)
+    ax.set_ylim(0, len(groups))
+    ax.axis("off")
 
     for row, (label, chips) in enumerate(groups):
         y = len(groups) - row - 0.5
@@ -246,7 +253,9 @@ def risk_grid(path) -> Path:
         ("Repetitive craters make deep\nmatchers confidently wrong", "The agreement gate, measured\nat 0.0% precision rejected"),
     ]
     fig, ax = plt.subplots(figsize=(6.15, 2.72), facecolor="white")
-    ax.set_xlim(0, 2); ax.set_ylim(0, len(rows)); ax.axis("off")
+    ax.set_xlim(0, 2)
+    ax.set_ylim(0, len(rows))
+    ax.axis("off")
 
     ax.text(0.02, len(rows) + 0.14, "RISK", fontsize=7.8, color=ACCENT, fontweight="bold")
     ax.text(1.02, len(rows) + 0.14, "MITIGATION", fontsize=7.8, color=GREEN, fontweight="bold")
@@ -273,7 +282,9 @@ def gate_visual(path) -> Path:
     figure that is taller than its band overlaps whatever is underneath it.
     """
     fig, ax = plt.subplots(figsize=(11.9, 0.92), facecolor="white")
-    ax.set_xlim(0, 12); ax.set_ylim(0, 1); ax.axis("off")
+    ax.set_xlim(0, 12)
+    ax.set_ylim(0, 1)
+    ax.axis("off")
 
     def step(x, value, label, colour):
         ax.text(x, 0.66, value, ha="center", va="center", fontsize=17,
@@ -337,7 +348,8 @@ def tiepoint_map(path, demo_dir: Path, scene_key: str = "ohrc_nac") -> Path:
     cb.set_label("residual (px)", fontsize=7.4, color=MUTED)
     cb.ax.tick_params(labelsize=6.8, colors=MUTED)
 
-    ax.set_xlim(0, 1); ax.set_ylim(1, 0)
+    ax.set_xlim(0, 1)
+    ax.set_ylim(1, 0)
     _frame(ax, "#c3ccd9")
     ax.set_title(f"{len(pts)} tie points over the 8\u00d78 lattice", fontsize=8.6,
                  color=INK, pad=6, loc="left")
