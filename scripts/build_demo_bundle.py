@@ -183,9 +183,14 @@ def run_scene(scene: dict, cfg: SetuConfig) -> dict:
         registered = warp_global(pair.source, np.array(gm["matrix"]),
                                  pair.reference.shape[:2], resample="lanczos")
         images["registered"] = save(f"{k}_registered.png", registered)
-        images["checkerboard"] = save(f"{k}_checker.png", checkerboard(registered, pair.reference, tile=52))
-        images["before"] = save(f"{k}_before.png", _overlay(_resize(pair.source, pair.reference.shape), pair.reference))
-        images["after"] = save(f"{k}_after.png", _overlay(registered, pair.reference))
+        images["checkerboard"] = save(f"{k}_checker.png", checkerboard(registered, rendered.image, tile=52))
+        # The overlay is compared against the *re-illuminated* reference, not the raw one.
+        # Against the raw reference the two images differ in brightness everywhere simply
+        # because the Sun moved, so the whole frame comes out coloured whether or not it
+        # is aligned, and "grey means aligned" stops being true.
+        images["before"] = save_rgb(f"{k}_before.png",
+                                    _overlay(_resize(pair.source, pair.reference.shape), rendered.image))
+        images["after"] = save_rgb(f"{k}_after.png", _overlay(registered, rendered.image))
 
     inliers = [t for t in result.tiepoints if t.inlier]
     tiepoints = [

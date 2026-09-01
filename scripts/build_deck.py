@@ -212,39 +212,49 @@ def pc(v, d=1):
 
 
 # -------------------------------------------------------------------- slides
+#
+# Figure-first, by instruction and by judgement. The template asks for diagrams and
+# infographics rather than paragraphs, and a panel skimming thousands of submissions reads
+# a picture long before a sentence. Text on these slides is labels and captions; the
+# argument is carried by the figures, and the figures are drawn from real runs.
+
+
+def tile(slide, left, top, width, value, label, colour=GREEN, size=20):
+    """One big number with a caption under it."""
+    _, tf = textbox(slide, left, top, width, 0.86)
+    para(tf, value, size=size, bold=True, color=colour, space_after=1, first=True, line=0.95)
+    para(tf, label, size=8.2, color=MUTED, space_after=0, line=1.05)
+
 
 def slide1_title(slide, n) -> None:
-    """Title page. The template's own bullet list, filled in."""
+    """Title page: the template's own required fields, filled in."""
     box = find_shape(slide, lambda s: s.name == "TextBox 9")
-    if box is None:
-        return
-    tf = box.text_frame
-    for p in list(tf.paragraphs):
-        p._p.getparent().remove(p._p)
-    tf.add_paragraph()
+    if box is not None:
+        tf = box.text_frame
+        for p in list(tf.paragraphs):
+            p._p.getparent().remove(p._p)
+        tf.add_paragraph()
+        rows = [
+            ("Problem Statement ID", PS_ID),
+            ("Problem Statement Title", PS_TITLE),
+            ("Theme", THEME),
+            ("PS Category", CATEGORY),
+            ("Team ID", TEAM_ID),
+            ("Team Name", TEAM_NAME),
+        ]
+        for i, (k, v) in enumerate(rows):
+            rich(tf, [(f"{k} \u2013 ", True, INK), (v, False, MUTED)],
+                 size=12 if k != "Problem Statement Title" else 10.5,
+                 space_after=9, first=(i == 0), bullet=True, line=1.05)
 
-    rows = [
-        ("Problem Statement ID", PS_ID),
-        ("Problem Statement Title", PS_TITLE),
-        ("Theme", THEME),
-        ("PS Category", CATEGORY),
-        ("Team ID", TEAM_ID),
-        ("Team Name", TEAM_NAME),
-    ]
-    for i, (k, v) in enumerate(rows):
-        size = 12 if k != "Problem Statement Title" else 11
-        rich(tf, [(f"{k} – ", True, INK), (v, False, MUTED)],
-             size=size, space_after=9, first=(i == 0), bullet=True, line=1.05)
-
-    # The one line the deck wants remembered, under the fold on the title page.
-    _, tf2 = textbox(slide, 0.36, 6.15, 6.6, 1.0)
-    para(tf2, "SETU", size=20, bold=True, color=DARKBLUE, space_after=2, first=True)
-    para(tf2, "Geometry for scale and viewpoint. Physics for the Sun. "
-              "Learning only for what is left.", size=11.5, italic=True, color=BLUE)
+    _, tf = textbox(slide, 0.36, 6.05, 6.9, 1.1)
+    para(tf, "SETU", size=22, bold=True, color=DARKBLUE, space_after=2, first=True)
+    para(tf, "Geometry for scale and viewpoint. Physics for the Sun. "
+             "Learning only for what is left.", size=11.5, italic=True, color=BLUE)
 
 
 def slide2_idea(slide, n) -> None:
-    """Proposed solution."""
+    """Proposed solution, told in two figures and four numbers."""
     clear_body(slide)
     set_team_oval(slide)
 
@@ -254,374 +264,234 @@ def slide2_idea(slide, n) -> None:
         for p in list(tf.paragraphs):
             p._p.getparent().remove(p._p)
         tf.add_paragraph()
-        para(tf, "SETU: registration that spends the geometry and removes the Sun",
-             size=21, bold=True, color=DARKBLUE, align=PP_ALIGN.CENTER, first=True)
+        para(tf, "SETU: spend the geometry, remove the Sun",
+             size=22, bold=True, color=DARKBLUE, align=PP_ALIGN.CENTER, first=True)
 
-    # ---- left column: the solution
-    _, tf = textbox(slide, 0.42, 1.36, 6.45, 5.4)
-    para(tf, "PROPOSED SOLUTION", size=10.5, bold=True, color=BLUE, space_after=7, first=True)
+    pic = FIGS / "illumination_story.png"
+    if pic.exists():
+        slide.shapes.add_picture(str(pic), Inches(0.55), Inches(1.22), width=Inches(12.25))
 
-    para(tf, "PS 26166 names three variations. Two of them are not appearance problems.",
-         size=11, bold=True, color=INK, space_after=6)
+    pic = FIGS / "variation_map.png"
+    if pic.exists():
+        slide.shapes.add_picture(str(pic), Inches(0.45), Inches(4.62), width=Inches(6.55))
 
-    rich(tf, [("Scale and viewpoint are geometry, ", False, INK),
-              ("and Chandrayaan-2 ships the geometry in every product. ", False, MUTED),
-              ("SETU ortho-projects both images onto one map projection at one ground "
-               "sampling distance on SLDEM2015, which collapses ratios up to 160x and "
-               "tens of degrees of viewpoint into a residual planar shift.", False, MUTED)],
-         size=10.5, space_after=6, bullet=True, line=1.02)
+    _, tf = textbox(slide, 7.35, 4.62, 5.55, 0.32)
+    para(tf, "MEASURED ON 31 PAIRS WITH EXACT GROUND TRUTH", size=8.6, bold=True,
+         color=BLUE, first=True, space_after=0)
 
-    rich(tf, [("Illumination is real appearance, so we delete it. ", False, INK),
-              ("The reference is re-rendered from the terrain model under the source "
-               "image's own solar azimuth, elevation and emission angle, using "
-               "Lunar-Lambert reflectance with McEwen limb darkening and ray-cast "
-               "shadows. Matching then happens between two images that agree about "
-               "where the Sun is.", False, MUTED)],
-         size=10.5, space_after=6, bullet=True, line=1.02)
-
-    rich(tf, [("Whatever survives goes to two independent matchers. ", False, INK),
-              ("A pretrained cross-modality network and a phase-congruency structural "
-               "matcher run separately. A correspondence is kept only when both agree "
-               "within 2 px, or when one has a provably sharp correlation peak.", False, MUTED)],
-         size=10.5, space_after=9, bullet=True, line=1.02)
-
-    para(tf, "WHY THIS ADDRESSES THE PROBLEM", size=10.5, bold=True, color=BLUE,
-         space_after=6, space_before=3)
-    rich(tf, [("Chandrayaan-2 geolocation is out by kilometres ", False, INK),
-              ("(published OHRC reprocessing puts SPICE positions about 4 km from truth), "
-               "while the requirement is sub-pixel. Geometry closes the kilometres. "
-               "Physics closes the illumination. Learning is left only with the residual.",
-               False, MUTED)],
-         size=10.5, space_after=6, bullet=True, line=1.02)
-    rich(tf, [("Uniformity is an objective, not a by-product. ", False, INK),
-              ("Points are quota'd over a lattice on the true overlap, spread inside each "
-               "cell by farthest-point selection, and empty cells are re-searched against "
-               "the model once it is known.", False, MUTED)],
-         size=10.5, space_after=6, bullet=True, line=1.02)
-    rich(tf, [("Every tie point carries a 2x2 covariance ", False, INK),
-              ("that weights the robust fit, sets the outlier threshold, and is written "
-               "into the output file. That is what makes a match list ingestible.",
-               False, MUTED)],
-         size=10.5, space_after=0, bullet=True, line=1.02)
-
-    # ---- right column: the measurement
-    band(slide, 7.05, 1.36, 5.9, 1.62, fill=RGBColor(0xFD, 0xEC, 0xF1), line=ACCENT)
-    _, tf = textbox(slide, 7.28, 1.5, 5.45, 1.4)
-    para(tf, "WHAT MAKES IT HARD, MEASURED", size=9.5, bold=True, color=ACCENT,
-         space_after=4, first=True)
-    rich(tf, [("Same crater field, same viewpoint, Sun moved from east to west. "
-               "Correlation between the two images: ", False, INK),
-              (f"{n['ncc_opposite']:+.3f}", True, ACCENT), (".", False, INK)],
-         size=10.5, space_after=3, line=1.02)
-    para(tf, "Not weakly correlated. Inverted. Every gradient a descriptor keys on has "
-             "changed sign, which is why SIFT, ORB and a MegaDepth-trained network fail "
-             "here rather than degrade.", size=9.5, color=MUTED, space_after=0, line=1.02)
-
-    band(slide, 7.05, 3.12, 5.9, 3.28, fill=RGBColor(0xEC, 0xF7, 0xF2), line=GREEN)
-    _, tf = textbox(slide, 7.28, 3.26, 5.45, 3.05)
-    para(tf, "WHAT SETU DOES ABOUT IT", size=9.5, bold=True, color=GREEN,
-         space_after=6, first=True)
-    rich(tf, [("Re-illuminate the reference and that same pair correlates at ", False, INK),
-              (f"{n['ncc_reillum']:+.3f}", True, GREEN), (".", False, INK)],
-         size=10.5, space_after=7, line=1.02)
-
-    rows = [
-        ("Tie-point RMSE against exact truth", f"{f(n['setu_rmse'])} px", GREEN),
-        ("SIFT, on the same pairs", f"{f(n['sift_rmse'], 1)} px", MUTED),
-        ("LoFTR, on the same pairs", f"{f(n['loftr_rmse'], 2)} px", MUTED),
-        ("Correspondences within 3 px of truth", pc(n["setu_prec"]), GREEN),
-        ("Inlier ratio after MAGSAC++", pc(n["setu_inlier"]), GREEN),
-        ("Lattice coverage at 150 points", f"{f(n['setu_cov'], 2)}", GREEN),
-        ("LoFTR coverage at the same count", f"{f(n['loftr_cov'], 2)}", MUTED),
+    tiles = [
+        (f"{f(n['setu_rmse'])} px", "tie-point RMSE vs truth", GREEN),
+        (pc(n["setu_prec"], 0), "matches within 3 px", GREEN),
+        (f"{n['sift_rmse'] / n['setu_rmse']:.0f}\u00d7", "better than SIFT", GREEN),
+        (f"{f(n['setu_cov'], 2)}", "coverage at 150 pts", GREEN),
     ]
-    for label, value, colour in rows:
-        rich(tf, [(f"{label}:  ", False, MUTED), (value, True, colour)],
-             size=10, space_after=4, line=1.0)
+    left = 7.35
+    for value, label, colour in tiles:
+        tile(slide, left, 5.02, 1.40, value, label, colour, size=19)
+        left += 1.40
 
-    para(tf, f"Measured over {n['n_pairs']} benchmark pairs whose true geometric "
-             "relationship is known exactly, not fitted.",
-         size=8.5, italic=True, color=MUTED, space_before=5, space_after=0, line=1.0)
+    _, tf = textbox(slide, 7.35, 6.02, 5.55, 0.8)
+    rich(tf, [("Every match carries a 2\u00d72 covariance. ", True, INK),
+              ("It weights the fit, sets the outlier threshold, and ships in the "
+               "tie-point file.", False, MUTED)],
+         size=9.2, first=True, space_after=3, line=1.05)
+    rich(tf, [("Uniformity is an objective, not a by-product. ", True, INK),
+              ("Lattice quota over the true overlap; empty cells re-seeded.", False, MUTED)],
+         size=9.2, space_after=0, line=1.05)
 
 
 def slide3_technical(slide, n) -> None:
-    """Technical approach: the stack and the flow."""
+    """Technical approach: one flow diagram, one stack graphic."""
     clear_body(slide)
     set_team_oval(slide)
-
-    _, tf = textbox(slide, 0.42, 1.22, 5.7, 1.98)
-    para(tf, "TECHNOLOGIES", size=10.5, bold=True, color=BLUE, space_after=6, first=True)
-    stack = [
-        ("Language and arrays", "Python 3.11, NumPy, SciPy"),
-        ("Raster and geodesy", "rasterio, GDAL, pyproj, shapely, lunar CRS on R = 1,737,400 m"),
-        ("Planetary I/O", "pds4_tools, pvl, spiceypy, PDS4 and PDS3 readers, windowed access"),
-        ("Classical vision", "OpenCV with USAC_MAGSAC, scikit-image"),
-        ("Structural features", "vendored Kovesi phase congruency, MIM, CFOG, LNIFT in NumPy and FFT"),
-        ("Deep matching", "PyTorch, kornia; MatchAnything, LoFTR, LightGlue, XFeat behind one adapter"),
-        ("Service and demo", "FastAPI, uvicorn, React, Vite, TypeScript, GSAP"),
-        ("Packaging", "Docker image, GitHub Actions running lint, tests and an end-to-end pair"),
-    ]
-    for label, value in stack:
-        rich(tf, [(f"{label}:  ", True, INK), (value, False, MUTED)],
-             size=8.5, space_after=2.6, line=0.98)
-
-    _, tf = textbox(slide, 6.42, 1.22, 6.5, 1.98)
-    para(tf, "METHODOLOGY", size=10.5, bold=True, color=BLUE, space_after=6, first=True)
-    method = [
-        ("Spend the geometry first.", "Choose the working CRS from the footprint, work at "
-         "the coarser of the two GSDs, and never upsample the coarser image to meet the "
-         "finer one. Off-nadir imagery gets an explicit terrain-parallax correction, which "
-         "at 25 degrees and 200 m of relief is 373 OHRC pixels."),
-        ("Then remove the Sun.", "Render the reference at the source's solar geometry. "
-         "Shadows come from a horizon sweep along the sun azimuth, which is O(N) per "
-         "azimuth and needs no mesh library."),
-        ("Then match, twice, and gate.", "Track A is a pretrained cross-modality network on "
-         "the harmonised imagery. Track B is phase-congruency detection with maximum-index-map "
-         "description and CFOG template refinement, on the structural maps."),
-        ("Then measure everything.", "The harness was built before the matcher, so no "
-         "tuning decision was made against intuition."),
-    ]
-    for label, value in method:
-        rich(tf, [(f"{label} ", True, INK), (value, False, MUTED)],
-             size=8.5, space_after=3.4, line=0.98, bullet=True)
 
     pic = FIGS / "pipeline.png"
     if pic.exists():
-        # 11.0 in wide keeps the rendered height near 3.25 in, which leaves the caption
-        # clear of the diagram and both clear of the template's footer bar at 6.95 in.
-        slide.shapes.add_picture(str(pic), Inches(1.30), Inches(3.30), width=Inches(10.7))
+        slide.shapes.add_picture(str(pic), Inches(0.50), Inches(1.14), width=Inches(12.35))
 
-    _, tf = textbox(slide, 0.42, 6.34, 12.5, 0.56)
-    rich(tf, [("Two feedback edges are implemented, not described. ", True, INK),
-              ("Once a global transform exists, pre-alignment re-runs from the corrected "
-               "footprint. Cells that fail their quota are re-searched at a lowered "
-               "threshold inside a 5 px window, which is what actually delivers uniformity: "
-               "coverage rises from 0.33 to 0.90 on a representative run.", False, MUTED)],
-         size=8.8, space_after=0, first=True, line=1.0)
+    pic = FIGS / "stack_chips.png"
+    if pic.exists():
+        # 6.1 in wide keeps the rendered height near 2.2 in, clear of the footer at 6.95.
+        slide.shapes.add_picture(str(pic), Inches(0.45), Inches(4.58), width=Inches(6.10))
+
+    _, tf = textbox(slide, 7.15, 4.62, 5.75, 2.2)
+    para(tf, "THREE CHOICES THAT MATTER", size=8.8, bold=True, color=BLUE,
+         space_after=7, first=True)
+    for label, body in [
+        ("Never upsample the coarser image.",
+         "Work at the coarser GSD, reach it by area-averaging."),
+        ("Parallax is not optional off-nadir.",
+         "At 25\u00b0 and 200 m of relief it is 373 OHRC pixels."),
+        ("Harness built before the matcher.",
+         "No tuning decision was made against intuition."),
+    ]:
+        rich(tf, [(f"{label} ", True, INK), (body, False, MUTED)],
+             size=9.4, space_after=6, line=1.06, bullet=True)
 
 
 def slide4_feasibility(slide, n) -> None:
-    """Feasibility, the honest risk register, and what the system does when it cannot win."""
+    """Feasibility: the honest result, the risk matrix, and the refusal to guess."""
     clear_body(slide)
     set_team_oval(slide)
 
-    _, tf = textbox(slide, 0.42, 1.20, 6.2, 2.0)
-    para(tf, "FEASIBILITY: IT IS BUILT AND IT IS MEASURED", size=10.5, bold=True,
-         color=BLUE, space_after=6, first=True)
-    built = [
-        "All nine stages implemented, both feedback edges included, running end to end on CPU.",
-        f"{n['n_pairs']} benchmark pairs, 12 methods, every metric with a bootstrap "
-        "confidence interval over pairs.",
-        "40 tests, including photometric limiting cases, Clark-Evans calibrated against a "
-        "Poisson process, and a full pipeline run checked against a known transform.",
-        f"A registration takes about {f(n['setu_t'], 1)} s per pair on a laptop, with no GPU required.",
-        "Docker image plus CI that builds it and waits for the container's health check.",
-    ]
-    for b in built:
-        para(tf, b, size=9.4, color=MUTED, space_after=4, bullet=True, line=1.02)
-
-    _, tf = textbox(slide, 6.85, 1.14, 6.1, 2.15)
-    para(tf, "CHALLENGES AND WHAT WE DID ABOUT THEM", size=10.5, bold=True,
-         color=BLUE, space_after=6, first=True)
-    risks = [
-        ("PRADAN needs an account and the OHRC archive is over 200 GB.",
-         "P0 to P2 were built entirely against the controlled benchmark, so no phase was "
-         "ever blocked on a download. The PDS4, PDS3 and GeoTIFF readers are written and "
-         "tested against real label structures."),
-        ("SPICE and ISIS integration can consume days.",
-         "Tier B, a corner fit with terrain parallax, is the default and is sufficient. "
-         "Tier A is behind a capability check that degrades and says so."),
-        ("A 59 m DEM cannot render 25 cm OHRC photorealistically.",
-         "It is not asked to. The render constrains global and mid-frequency alignment; "
-         "sub-pixel accuracy comes from S4 on the real image pair. We state this rather "
-         "than implying the render is photoreal."),
-        ("Repetitive crater fields make deep matchers confidently wrong.",
-         "That is what the gate is for, and it is measured below."),
-    ]
-    for label, value in risks:
-        rich(tf, [(f"{label} ", True, INK), (value, False, MUTED)],
-             size=9.0, space_after=4.5, line=1.0, bullet=True)
-
-    band(slide, 0.42, 3.18, 12.5, 1.28, fill=RGBColor(0xFD, 0xEC, 0xF1), line=ACCENT)
-    _, tf = textbox(slide, 0.68, 3.30, 12.0, 1.1)
-    para(tf, "THE PROPERTY WE ARE PROUDEST OF: IT DECLINES RATHER THAN LIES",
-         size=10.5, bold=True, color=ACCENT, space_after=5, first=True)
-    rich(tf, [("At an eightfold scale ratio the deep matcher returns 144 confident "
-               "correspondences with ", False, INK),
-              ("0.0% precision", True, ACCENT),
-              (", a median error of 92 px. The agreement gate rejected every one of them "
-               "and SETU returned no registration at all. For a system whose output might "
-               "inform a landing site, refusing to answer is the correct behaviour and a "
-               "plausible wrong answer is the dangerous one. This is why the two tracks are "
-               "independent and why the gate exists.", False, MUTED)],
-         size=9.8, space_after=0, line=1.05)
-
-    _, tf = textbox(slide, 0.42, 4.66, 6.2, 2.2)
-    para(tf, "VIABILITY", size=10.5, bold=True, color=BLUE, space_after=5, first=True)
-    for b in [
-        "Nothing hard-codes a payload. OHRC, TMC-2, IIRS, NAC, Kaguya TC and WAC all enter "
-        "through one Product abstraction.",
-        "The reference policy is an inspectable table, so IIRS is matched against Kaguya TC "
-        "or a hillshade rather than being forced against 0.5 m NAC.",
-        "Illumination is never guessed. If it cannot be resolved from a backplane, from "
-        "SPICE, or from label keywords, the run stops.",
-    ]:
-        para(tf, b, size=9.4, color=MUTED, space_after=4, bullet=True, line=1.02)
+    band(slide, 0.45, 1.14, 12.45, 1.42, fill=RGBColor(0xFD, 0xEC, 0xF1), line=ACCENT)
+    _, tf = textbox(slide, 0.68, 1.24, 7.0, 0.3)
+    para(tf, "AT AN 8\u00d7 SCALE RATIO, SETU DECLINES RATHER THAN LIES",
+         size=9.4, bold=True, color=ACCENT, first=True, space_after=0)
+    pic = FIGS / "gate_visual.png"
+    if pic.exists():
+        slide.shapes.add_picture(str(pic), Inches(0.62), Inches(1.56), width=Inches(12.1))
 
     pic = FIGS / "accuracy_bars.png"
     if pic.exists():
-        slide.shapes.add_picture(str(pic), Inches(6.85), Inches(4.60), width=Inches(5.95))
+        slide.shapes.add_picture(str(pic), Inches(0.45), Inches(2.86), width=Inches(6.25))
+    pic = FIGS / "risk_grid.png"
+    if pic.exists():
+        slide.shapes.add_picture(str(pic), Inches(6.95), Inches(2.86), width=Inches(5.95))
+
+    _, tf = textbox(slide, 0.45, 6.02, 12.45, 0.85)
+    para(tf, "BUILT, NOT DESCRIBED", size=8.8, bold=True, color=BLUE, first=True, space_after=5)
+    left = 0.45
+    for value, label in [
+        ("9 / 9", "stages, both feedback edges"),
+        ("41", "tests, green"),
+        (f"{f(n['setu_t'], 1)} s", "per pair, no GPU"),
+        ("1", "Docker image, CI builds it"),
+        ("12", "methods benchmarked"),
+    ]:
+        tile(slide, left, 6.32, 2.45, value, label, GREEN, size=15)
+        left += 2.50
 
 
 def slide5_impact(slide, n) -> None:
-    """Impact, benefits, and the live link."""
+    """Impact: numbers, the uniformity proof, and a QR to the live demo."""
     clear_body(slide)
     set_team_oval(slide)
 
-    _, tf = textbox(slide, 0.42, 1.20, 6.2, 2.8)
-    para(tf, "IMPACT ON THE TARGET USER", size=10.5, bold=True, color=BLUE,
-         space_after=6, first=True)
-    for label, body in [
-        ("Archived Chandrayaan-2 data becomes geometrically usable.",
-         "Kilometre-level geolocation is the reason OHRC, TMC-2 and IIRS products are hard "
-         "to combine with each other or with LRO. Correcting that turns an archive of "
-         "individually good images into a co-registered one."),
-        ("A tie-point list an agency can actually ingest.",
-         "Every point carries its own covariance, so a downstream bundle adjustment or DEM "
-         "pipeline can weight it properly instead of treating all matches as equal."),
-        ("A measurement of spacecraft pointing, for free.",
-         "The per-row jitter spline fitted for pushbroom payloads reports the amplitude and "
-         "dominant period of attitude jitter, which falls out of registration as a by-product."),
-        ("Site selection and change detection.",
-         "Uniform, uncertainty-tagged correspondence over the whole overlap is what landing "
-         "site characterisation and repeat-pass comparison need."),
-    ]:
-        rich(tf, [(f"{label} ", True, INK), (body, False, MUTED)],
-             size=9.4, space_after=5, line=1.02, bullet=True)
-
-    _, tf = textbox(slide, 6.85, 1.12, 6.1, 2.9)
-    para(tf, "BENEFITS", size=10.5, bold=True, color=BLUE, space_after=6, first=True)
-    for label, body in [
-        ("Scientific.",
-         "The method generalises past the Moon. Any airless body with a shape model and "
-         "seleno-tagged imagery has the same illumination problem, so Mars, Mercury and "
-         "asteroid campaigns inherit the approach unchanged."),
-        ("Operational.",
-         "Runs on a laptop with no GPU. A registration finishes in seconds, and the whole "
-         "install is one Docker image, which is the part most likely to fail on the day."),
-        ("Economic.",
-         "Nothing proprietary. Every dependency is open source and every reference dataset "
-         "is public, so there is no licence to renew and no vendor to depend on."),
-        ("Methodological.",
-         "The benchmark generator ships with the system, so a future team can measure "
-         "against exact truth rather than against a screenshot."),
-    ]:
-        rich(tf, [(f"{label} ", True, INK), (body, False, MUTED)],
-             size=9.4, space_after=5, line=1.02, bullet=True)
-
-    band(slide, 0.42, 4.18, 12.5, 1.28, fill=RGBColor(0xEC, 0xF7, 0xF2), line=GREEN)
-    _, tf = textbox(slide, 0.68, 4.3, 12.0, 1.1)
-    para(tf, "TRY IT", size=9.5, bold=True, color=GREEN, space_after=4, first=True)
-    rich(tf, [("Live demo:  ", False, MUTED), (LIVE_URL, True, GREEN)],
-         size=11.5, space_after=3, line=1.0)
-    para(tf, "Three complete registrations at increasing difficulty, the pipeline played "
-             "stage by stage with the re-illumination as a visible step, tie points coloured "
-             "by residual, and the full leaderboard with confidence intervals.",
-         size=9.2, color=MUTED, space_after=0, line=1.02)
-
-    _, tf = textbox(slide, 0.42, 5.62, 12.5, 1.2)
-    para(tf, "HEADLINE NUMBERS", size=10.5, bold=True, color=BLUE, space_after=5, first=True)
-    cells = [
+    left = 0.45
+    for value, label in [
         (f"{f(n['setu_rmse'])} px", "tie-point RMSE vs exact truth"),
         (pc(n["setu_prec"], 0), "matches within 3 px of truth"),
         (pc(n["setu_inlier"], 0), "inlier ratio after MAGSAC++"),
-        (f"{f(n['setu_cov'], 2)}", "coverage at 150 points"),
-        (f"{n['sift_rmse'] / n['setu_rmse']:.0f}x", "better than SIFT per tie point"),
-    ]
-    left = 0.42
-    for value, label in cells:
-        _, cell = textbox(slide, left, 6.02, 2.45, 0.78)
-        para(cell, value, size=17, bold=True, color=GREEN, space_after=1, first=True, line=1.0)
-        para(cell, label, size=8.5, color=MUTED, space_after=0, line=1.0)
-        left += 2.52
+        (f"{f(n['setu_cov'], 2)}", "coverage, mean over 31 pairs"),
+        (f"{n['sift_rmse'] / n['setu_rmse']:.0f}\u00d7", "better per point than SIFT"),
+    ]:
+        tile(slide, left, 1.18, 2.45, value, label, GREEN, size=21)
+        left += 2.50
+
+    pic = FIGS / "tiepoint_map.png"
+    if pic.exists():
+        slide.shapes.add_picture(str(pic), Inches(0.55), Inches(2.16), height=Inches(3.14))
+
+    _, tf = textbox(slide, 6.85, 2.30, 6.05, 2.9)
+    para(tf, "WHAT THIS BUYS ISRO", size=8.8, bold=True, color=BLUE, space_after=7, first=True)
+    for label, body in [
+        ("An archive that co-registers.",
+         "Kilometre-level geolocation is why OHRC, TMC-2 and IIRS are hard to combine."),
+        ("A tie-point list that can be ingested.",
+         "Per-point covariance, so a bundle adjustment can weight it."),
+        ("Pointing stability, for free.",
+         "The per-row jitter spline falls out of registration."),
+        ("Generalises past the Moon.",
+         "Any airless body with a shape model has the same problem."),
+    ]:
+        rich(tf, [(f"{label} ", True, INK), (body, False, MUTED)],
+             size=9.4, space_after=6, line=1.06, bullet=True)
+
+    band(slide, 0.45, 5.40, 12.45, 1.36, fill=RGBColor(0xEC, 0xF7, 0xF2), line=GREEN)
+    pic = FIGS / "qr.png"
+    if pic.exists():
+        slide.shapes.add_picture(str(pic), Inches(0.68), Inches(5.54), height=Inches(1.08))
+    _, tf = textbox(slide, 1.98, 5.62, 10.8, 1.05)
+    para(tf, "TRY IT LIVE", size=9, bold=True, color=GREEN, space_after=3, first=True)
+    para(tf, LIVE_URL, size=13.5, bold=True, color=GREEN, space_after=3)
+    para(tf, "Three registrations at increasing difficulty, the pipeline played stage by "
+             "stage, tie points coloured by residual, and the full leaderboard.",
+         size=9, color=MUTED, space_after=0, line=1.05)
 
 
 def slide6_research(slide, n) -> None:
-    """References, and where the work and its numbers live."""
+    """References, sources and where the work lives."""
     clear_body(slide)
     set_team_oval(slide)
 
-    _, tf = textbox(slide, 0.42, 1.20, 6.3, 5.4)
-    para(tf, "RESEARCH THIS BUILDS ON", size=10.5, bold=True, color=BLUE,
+    _, tf = textbox(slide, 0.45, 1.20, 7.6, 5.4)
+    para(tf, "RESEARCH THIS BUILDS ON", size=9.2, bold=True, color=BLUE,
          space_after=6, first=True)
-    refs = [
-        ("He et al.", "MatchAnything: Universal Cross-Modality Image Matching with "
-         "Large-Scale Pre-Training. TPAMI 2026, arXiv:2501.07556. Track A weights."),
-        ("Li, Hu and Ai.", "RIFT: Multi-Modal Image Matching Based on Radiation-Variation "
-         "Insensitive Feature Transform. IEEE TIP 29:3296, 2020. Track B descriptor."),
-        ("Ye et al.", "Structural similarity for multimodal remote sensing (HOPC), IEEE "
-         "TGRS 55(5) 2017, and CFOG, ISPRS 2019."),
-        ("Kovesi.", "Image Features from Phase Congruency, 1999. Vendored, because "
-         "phasepack breaks on modern NumPy."),
-        ("Kumar, Kaushal and Murthy.", "MoonMetaSync: Lunar Image Registration Analysis, "
-         "arXiv:2410.11118, 2024. The lunar-specific floor we set out to beat."),
-        ("Tungathurthi.", "Geodetically Anchored 0.30 m DEM of the Chandrayaan-3 Vikram "
-         "Landing Site, arXiv:2602.14993, 2026. Documents the 4 to 6 km OHRC geolocation error."),
-        ("Barker et al.", "SLDEM2015, a new lunar DEM from LOLA and SELENE Terrain Camera. "
-         "Icarus 273:346, 2016. The shape model."),
-        ("Chowdhury et al.", "Chandrayaan-2 Orbiter High Resolution Camera. Current Science "
-         "118(4):560, 2020, with companion papers on TMC-2 and IIRS."),
-        ("Verma, Chauhan and Chauhan.", "Lunar surface temperature and thermal emission "
-         "correction from Chandrayaan-2 IIRS. Icarus 383:115075, 2022."),
-        ("Barath et al.", "MAGSAC++, CVPR 2020. The robust estimator, with an adaptive "
-         "threshold derived from our own per-point covariances."),
-    ]
-    for who, what in refs:
-        rich(tf, [(f"{who} ", True, INK), (what, False, MUTED)],
-             size=8.6, space_after=3.6, line=1.0, bullet=True)
-
-    _, tf = textbox(slide, 6.95, 1.12, 6.0, 2.6)
-    para(tf, "DATA SOURCES", size=10.5, bold=True, color=BLUE, space_after=6, first=True)
     for who, what in [
-        ("Chandrayaan-2 L1", "OHRC, TMC-2 and IIRS with SPICE kernels, via PRADAN "
-         "(pradan.issdc.gov.in/ch2)"),
-        ("LRO NAC and NAC DTMs", "via LROC and the ODE search (ode.rsl.wustl.edu/moon)"),
-        ("SLDEM2015", "512 ppd, about 59 m/px, from imbrium.mit.edu"),
-        ("Kaguya TC ortho and DEM", "JAXA DARTS, the resolution-appropriate reference for IIRS"),
-        ("LROC WAC", "global mosaic at about 100 m"),
+        ("He et al.", "MatchAnything, TPAMI 2026, arXiv:2501.07556. Track A weights."),
+        ("Li, Hu, Ai.", "RIFT, IEEE TIP 29:3296, 2020. Track B descriptor."),
+        ("Ye et al.", "HOPC, IEEE TGRS 55(5) 2017; CFOG, ISPRS 2019."),
+        ("Kovesi.", "Image Features from Phase Congruency, 1999. Vendored."),
+        ("Kumar et al.", "MoonMetaSync, arXiv:2410.11118, 2024. The lunar floor we beat."),
+        ("Tungathurthi.", "arXiv:2602.14993, 2026. Documents the 4 to 6 km OHRC error."),
+        ("Barker et al.", "SLDEM2015, Icarus 273:346, 2016. The shape model."),
+        ("Chowdhury et al.", "OHRC in-orbit performance, Current Science 118(4):560, 2020."),
+        ("Verma et al.", "IIRS thermal emission correction, Icarus 383:115075, 2022."),
+        ("Barath et al.", "MAGSAC++, CVPR 2020. With an adaptive threshold from our covariances."),
     ]:
-        rich(tf, [(f"{who}: ", True, INK), (what, False, MUTED)],
-             size=8.8, space_after=3.6, line=1.0, bullet=True)
+        rich(tf, [(f"{who} ", True, INK), (what, False, MUTED)],
+             size=9.0, space_after=4.0, line=1.02, bullet=True)
 
-    band(slide, 6.95, 3.92, 6.0, 2.5, fill=RGBColor(0xEE, 0xF6, 0xFC), line=BLUE)
-    _, tf = textbox(slide, 7.18, 4.06, 5.55, 2.25)
-    para(tf, "THE WORK ITSELF", size=9.5, bold=True, color=BLUE, space_after=5, first=True)
-    rich(tf, [("Live demo:  ", False, MUTED), (LIVE_URL, True, BLUE)],
-         size=9.6, space_after=4, line=1.0)
-    rich(tf, [("Source:  ", False, MUTED), (REPO_URL, True, BLUE)],
-         size=9.6, space_after=7, line=1.0)
-    para(tf, "Reproducing every number on these slides takes two commands:",
-         size=9, color=MUTED, space_after=3, line=1.0)
-    para(tf, "python experiments/run_sweeps.py", size=9, bold=True, color=INK,
-         space_after=1, line=1.0)
-    para(tf, "python scripts/build_demo_bundle.py", size=9, bold=True, color=INK,
+    para(tf, "DATA", size=9.2, bold=True, color=BLUE, space_before=10, space_after=5)
+    rich(tf, [("Chandrayaan-2 L1 via PRADAN  \u00b7  LRO NAC and NAC DTMs via ODE  \u00b7  "
+               "SLDEM2015 at 512 ppd  \u00b7  Kaguya TC via JAXA DARTS  \u00b7  LROC WAC",
+               False, MUTED)], size=9.0, space_after=0, line=1.05)
+
+    band(slide, 8.35, 1.20, 4.55, 3.05, fill=RGBColor(0xEE, 0xF6, 0xFC), line=BLUE)
+    pic = FIGS / "qr.png"
+    if pic.exists():
+        slide.shapes.add_picture(str(pic), Inches(9.95), Inches(1.42), height=Inches(1.35))
+    _, tf = textbox(slide, 8.58, 2.92, 4.1, 1.25)
+    para(tf, "LIVE DEMO", size=8.6, bold=True, color=BLUE, align=PP_ALIGN.CENTER,
+         first=True, space_after=3)
+    para(tf, LIVE_URL, size=9.4, bold=True, color=BLUE, align=PP_ALIGN.CENTER, space_after=4)
+    para(tf, REPO_URL, size=8.6, color=MUTED, align=PP_ALIGN.CENTER, space_after=0)
+
+    band(slide, 8.35, 4.45, 4.55, 2.15, fill=RGBColor(0xF7, 0xF9, 0xFC), line=RGBColor(0xC3, 0xCC, 0xD9))
+    _, tf = textbox(slide, 8.58, 4.60, 4.1, 1.9)
+    para(tf, "REPRODUCE EVERY NUMBER", size=8.6, bold=True, color=INK, space_after=5, first=True)
+    para(tf, "python experiments/run_sweeps.py", size=8.6, bold=True, color=BLUE,
+         space_after=2, line=1.0)
+    para(tf, "python scripts/build_demo_bundle.py", size=8.6, bold=True, color=BLUE,
          space_after=6, line=1.0)
-    para(tf, "The benchmark's ground truth is exact by construction: both images of every "
-             "pair are rendered from one terrain model under a transform that is known "
-             "rather than estimated. Results here are on that benchmark. The PDS4 and PDS3 "
-             "readers, the SPICE path and the sensor models are implemented and waiting on "
-             "archive access, not on code.",
-         size=8.4, italic=True, color=MUTED, space_after=0, line=1.02)
+    para(tf, "Ground truth is exact by construction: both images of every pair are rendered "
+             "from one terrain model under a known transform. Results are on that benchmark; "
+             "the PDS4 and PDS3 readers and the SPICE path await archive access, not code.",
+         size=8.0, italic=True, color=MUTED, space_after=0, line=1.06)
 
 
 # --------------------------------------------------------------------- main
 
 def build_figures(n: dict[str, Any]) -> None:
-    """Render the two figures the deck places, on white to match the template."""
-
-    from scripts.deck_figures import accuracy_bars, pipeline_diagram
+    """Render every figure the deck places, on white to match the template."""
+    from scripts.deck_figures import (
+        accuracy_bars,
+        gate_visual,
+        illumination_story,
+        pipeline_diagram,
+        qr,
+        risk_grid,
+        stack_chips,
+        tiepoint_map,
+        variation_map,
+    )
 
     FIGS.mkdir(parents=True, exist_ok=True)
+    demo = ROOT / "web" / "public" / "demo"
+
     pipeline_diagram(FIGS / "pipeline.png")
+    stack_chips(FIGS / "stack_chips.png")
+    variation_map(FIGS / "variation_map.png")
+    risk_grid(FIGS / "risk_grid.png")
+    gate_visual(FIGS / "gate_visual.png")
+    qr(FIGS / "qr.png", LIVE_URL)
+
+    if not demo.exists():
+        raise SystemExit(f"{demo} not found. Run scripts/build_demo_bundle.py first.")
+    illumination_story(FIGS / "illumination_story.png", demo,
+                       n["ncc_opposite"], n["ncc_reillum"], n["ncc_real"])
+    tiepoint_map(FIGS / "tiepoint_map.png", demo)
 
     rows = [
         ("SIFT + FLANN", n["sift_rmse"]),

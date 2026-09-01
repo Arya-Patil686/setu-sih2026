@@ -1,5 +1,5 @@
 {
- "generated_utc": "2026-09-01T05:51:30Z",
+ "generated_utc": "2026-09-01T06:43:38Z",
  "illumination": {
   "images": {
    "sun_east": "demo/illum_east.png",
@@ -266,8 +266,8 @@
      "single_track_pass_rate": 0.8233333333333334
     },
     "jitter_amplitude_px": null,
-    "runtime_s": 13.448,
-    "runtime_s_per_megapixel": 51.3008,
+    "runtime_s": 7.058,
+    "runtime_s_per_megapixel": 26.9236,
     "reillumination_applied": true,
     "rmse_vs_truth_px": 0.2451,
     "rmse_vs_truth_m": 1.226
@@ -276,7 +276,7 @@
     {
      "stage": "S0",
      "label": "Ingest",
-     "seconds": 0.002,
+     "seconds": 0.0,
      "source": {
       "pid": "ohrc_nac_src",
       "sensor": "OHRC",
@@ -396,7 +396,7 @@
     {
      "stage": "S1",
      "label": "Geometric pre-alignment",
-     "seconds": 0.007,
+     "seconds": 0.002,
      "grid": {
       "crs": "+proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +R=1737400 +units=m +no_defs +type=crs",
       "transform": [
@@ -482,7 +482,7 @@
     {
      "stage": "S2a",
      "label": "Sun-synchronised re-illumination",
-     "seconds": 0.051,
+     "seconds": 0.052,
      "reillumination": true,
      "ncc_source_vs_real_reference": 0.3576,
      "ncc_source_vs_rendered_reference": 0.5517,
@@ -502,7 +502,7 @@
     {
      "stage": "S2b",
      "label": "Structural transform",
-     "seconds": 0.12,
+     "seconds": 0.113,
      "transform": "pc",
      "ncc_raw": 0.5517,
      "ncc_structural": 0.0614,
@@ -511,18 +511,20 @@
     {
      "stage": "S3A",
      "label": "Track A: dense deep matcher",
-     "seconds": 8.07,
+     "seconds": 1.663,
      "n_matches": 3217,
      "input": "photometric",
      "matcher": "loftr",
      "device": "mps",
      "pretrained": "outdoor",
+     "downscale_src": 1.0,
+     "downscale_ref": 1.0,
      "tiles": 1
     },
     {
      "stage": "S3B",
      "label": "Track B: phase-congruency structural matcher",
-     "seconds": 1.128,
+     "seconds": 1.152,
      "n_matches": 469,
      "input": "structural",
      "n_kp_src": 641,
@@ -537,7 +539,7 @@
     {
      "stage": "S3G",
      "label": "Agreement gate",
-     "seconds": 0.526,
+     "seconds": 0.529,
      "n_accepted": 1457,
      "n_agreed": 469,
      "n_track_a_only": 988,
@@ -562,7 +564,7 @@
     {
      "stage": "S4",
      "label": "Sub-pixel refinement and covariance",
-     "seconds": 2.877,
+     "seconds": 2.888,
      "input": "structural",
      "n_in": 1457,
      "n_phase_correlation_ok": 1357,
@@ -614,7 +616,7 @@
     {
      "stage": "S6",
      "label": "Uniformity enforcement",
-     "seconds": 0.664,
+     "seconds": 0.656,
      "before": {
       "n_points": 1271,
       "lattice": [
@@ -4534,8 +4536,8 @@
      "single_track_pass_rate": 0.7776852622814321
     },
     "jitter_amplitude_px": null,
-    "runtime_s": 5.641,
-    "runtime_s_per_megapixel": 21.5178,
+    "runtime_s": 5.624,
+    "runtime_s_per_megapixel": 21.4552,
     "reillumination_applied": true,
     "rmse_vs_truth_px": 0.2236,
     "rmse_vs_truth_m": 1.118
@@ -4750,7 +4752,7 @@
     {
      "stage": "S2a",
      "label": "Sun-synchronised re-illumination",
-     "seconds": 0.052,
+     "seconds": 0.05,
      "reillumination": true,
      "ncc_source_vs_real_reference": -0.1783,
      "ncc_source_vs_rendered_reference": 0.6483,
@@ -4770,7 +4772,7 @@
     {
      "stage": "S2b",
      "label": "Structural transform",
-     "seconds": 0.114,
+     "seconds": 0.117,
      "transform": "pc",
      "ncc_raw": 0.6483,
      "ncc_structural": 0.1434,
@@ -4779,18 +4781,20 @@
     {
      "stage": "S3A",
      "label": "Track A: dense deep matcher",
-     "seconds": 0.752,
+     "seconds": 0.742,
      "n_matches": 3207,
      "input": "photometric",
      "matcher": "loftr",
      "device": "mps",
      "pretrained": "outdoor",
+     "downscale_src": 1.0,
+     "downscale_ref": 1.0,
      "tiles": 1
     },
     {
      "stage": "S3B",
      "label": "Track B: phase-congruency structural matcher",
-     "seconds": 1.129,
+     "seconds": 1.124,
      "n_matches": 496,
      "input": "structural",
      "n_kp_src": 628,
@@ -4805,7 +4809,7 @@
     {
      "stage": "S3G",
      "label": "Agreement gate",
-     "seconds": 0.574,
+     "seconds": 0.569,
      "n_accepted": 1429,
      "n_agreed": 495,
      "n_track_a_only": 934,
@@ -4830,7 +4834,7 @@
     {
      "stage": "S4",
      "label": "Sub-pixel refinement and covariance",
-     "seconds": 2.557,
+     "seconds": 2.563,
      "input": "structural",
      "n_in": 1429,
      "n_phase_correlation_ok": 1315,
@@ -4882,7 +4886,7 @@
     {
      "stage": "S6",
      "label": "Uniformity enforcement",
-     "seconds": 0.458,
+     "seconds": 0.456,
      "before": {
       "n_points": 1305,
       "lattice": [
@@ -8837,8 +8841,8 @@
      "single_track_pass_rate": 0.15704387990762125
     },
     "jitter_amplitude_px": null,
-    "runtime_s": 2.054,
-    "runtime_s_per_megapixel": 31.346,
+    "runtime_s": 2.015,
+    "runtime_s_per_megapixel": 30.7436,
     "reillumination_applied": true,
     "rmse_vs_truth_px": 2.5748,
     "rmse_vs_truth_m": 12.874
@@ -8968,7 +8972,7 @@
     {
      "stage": "S1",
      "label": "Geometric pre-alignment",
-     "seconds": 0.002,
+     "seconds": 0.001,
      "grid": {
       "crs": "+proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +R=1737400 +units=m +no_defs +type=crs",
       "transform": [
@@ -9054,7 +9058,7 @@
     {
      "stage": "S2a",
      "label": "Sun-synchronised re-illumination",
-     "seconds": 0.211,
+     "seconds": 0.205,
      "reillumination": true,
      "ncc_source_vs_real_reference": 0.728,
      "ncc_source_vs_rendered_reference": 0.8393,
@@ -9086,18 +9090,20 @@
     {
      "stage": "S3A",
      "label": "Track A: dense deep matcher",
-     "seconds": 0.344,
+     "seconds": 0.324,
      "n_matches": 639,
      "input": "photometric",
      "matcher": "loftr",
      "device": "mps",
      "pretrained": "outdoor",
+     "downscale_src": 1.0,
+     "downscale_ref": 1.0,
      "tiles": 1
     },
     {
      "stage": "S3B",
      "label": "Track B: phase-congruency structural matcher",
-     "seconds": 0.253,
+     "seconds": 0.249,
      "n_matches": 141,
      "input": "structural",
      "n_kp_src": 280,
@@ -9112,7 +9118,7 @@
     {
      "stage": "S3G",
      "label": "Agreement gate",
-     "seconds": 0.156,
+     "seconds": 0.157,
      "n_accepted": 199,
      "n_agreed": 131,
      "n_track_a_only": 68,
@@ -9136,7 +9142,7 @@
     {
      "stage": "S4",
      "label": "Sub-pixel refinement and covariance",
-     "seconds": 0.378,
+     "seconds": 0.381,
      "input": "structural",
      "n_in": 199,
      "n_phase_correlation_ok": 162,
@@ -9188,7 +9194,7 @@
     {
      "stage": "S6",
      "label": "Uniformity enforcement",
-     "seconds": 0.683,
+     "seconds": 0.672,
      "before": {
       "n_points": 153,
       "lattice": [
