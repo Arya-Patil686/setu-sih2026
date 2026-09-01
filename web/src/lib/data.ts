@@ -55,6 +55,8 @@ export interface EvalBundle {
   summary_azimuth?: Record<string, MethodSummary>
   summary_illumination?: Record<string, MethodSummary>
   summary_scale?: Record<string, MethodSummary>
+  summary_multimodal?: Record<string, MethodSummary>
+  summary_multimodal_thermal?: Record<string, MethodSummary>
   rows?: SweepPoint[]
 }
 

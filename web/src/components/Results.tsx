@@ -34,6 +34,8 @@ const SWEEPS = [
     caption: 'Source elevation swept against a fixed 45° reference. Absolute elevation is an unavoidable confound here, and it controls how much shadow exists to match on at all.' },
   { key: 'summary_scale', label: 'Scale ratio 1 to 16×', plot: 'rmse_vs_scale.png',
     caption: 'Ground sampling ratio swept at fixed illumination. Pre-alignment absorbs the ratio before any matcher sees the pair.' },
+  { key: 'summary_multimodal', label: 'Multi-modal', plot: 'rmse_reflected_solar.png',
+    caption: 'An IIRS-class sensor gap at a 4× scale ratio: a low-SNR, column-striped spectrometer band against a framing camera. SETU is the only method here that registers the pairs at all.' },
 ] as const
 
 function Cell({ s, digits = 3, kind = 'num' }: { s?: { value: number; ci_lo: number; ci_hi: number; n: number }; digits?: number; kind?: string }) {

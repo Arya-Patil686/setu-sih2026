@@ -29,13 +29,14 @@ from pptx.util import Emu, Inches, Pt
 TEMPLATE = Path("/Users/arya/Downloads/1787777508931-b8f8d32e9bed-SIH2026-IDEA-Presentation-Format.pptx")
 OUT_DIR = ROOT / "deck"
 EVAL = ROOT / "runs" / "eval_full" / "metrics.json"
+EVAL_MM = ROOT / "runs" / "eval_multimodal" / "metrics.json"
 FIGS = OUT_DIR / "figures"
 
 TEAM_NAME = "Bugs Janta Party"
 TEAM_ID = "800C4B"
 PS_ID = "26166"
-PS_TITLE = ("Sub-pixel correspondence between Chandrayaan-2 optical images and lunar "
-            "reference images, robust to illumination, viewpoint and scale")
+PS_TITLE = ("Multi-modal, Sun angle and scale invariant image correspondence"
+            " using Chandrayaan-2 optical images (OHRC, TMC and IIRS)")
 THEME = "Space Technology"
 CATEGORY = "Software"
 
@@ -172,9 +173,46 @@ def load_numbers() -> dict[str, Any]:
         except (KeyError, TypeError):
             return default
 
+    mm = {}
+    if EVAL_MM.exists():
+        mmdoc = json.loads(EVAL_MM.read_text())
+        rs = mmdoc["summary"].get("reflected_solar", {})
+        th = mmdoc["summary"].get("thermal", {})
+
+        def mval(summary, method, key, default=float("nan")):
+            try:
+                return summary[method][key]["value"]
+            except (KeyError, TypeError):
+                return default
+
+        setu_mm = mval(rs, "setu_full", "rmse_inliers_px")
+        others = [(mval(rs, k, "rmse_inliers_px"), k) for k in rs if not k.startswith("setu")]
+        others = [(v, k) for v, k in others if v == v]
+        best = min(others) if others else (float("nan"), "-")
+        mm = {
+            "mm_setu": setu_mm,
+            # The benchmark's source is 4x coarser than its reference, so the source-frame
+            # figure is the reference-frame one divided by the ratio. Both are quoted, because
+            # the problem statement asks for accuracy in the source image frame.
+            "mm_setu_src": setu_mm / 4.0,
+            "mm_setu_m": setu_mm * 5.0,
+            "mm_prec": mval(rs, "setu_full", "precision_3px"),
+            "mm_inlier": mval(rs, "setu_full", "inlier_ratio"),
+            "mm_best_other": best[0],
+            "mm_best_other_name": best[1],
+            "mm_factor": best[0] / setu_mm if setu_mm and setu_mm == setu_mm else float("nan"),
+            "mm_thermal_declined": th.get("setu_full", {}).get("n_failed", 0),
+            "mm_thermal_pairs": th.get("setu_full", {}).get("n_pairs", 0),
+            "mm_rows": sorted(
+                [(k, mval(rs, k, "rmse_inliers_px")) for k in rs
+                 if mval(rs, k, "rmse_inliers_px") == mval(rs, k, "rmse_inliers_px")],
+                key=lambda r: -r[1]),
+        }
+
     return {
         "doc": doc,
         "az": az,
+        **mm,
         "scale": scale,
         "n_pairs": doc.get("n_pairs"),
         "setu_rmse": val(az, "setu_full", "rmse_inliers_px"),
@@ -273,31 +311,34 @@ def slide2_idea(slide, n) -> None:
 
     pic = FIGS / "variation_map.png"
     if pic.exists():
-        slide.shapes.add_picture(str(pic), Inches(0.45), Inches(4.62), width=Inches(6.55))
+        slide.shapes.add_picture(str(pic), Inches(0.45), Inches(4.50), width=Inches(7.30))
 
-    _, tf = textbox(slide, 7.35, 4.62, 5.55, 0.32)
+    _, tf = textbox(slide, 7.95, 4.52, 4.95, 0.32)
     para(tf, "MEASURED ON 31 PAIRS WITH EXACT GROUND TRUTH", size=8.6, bold=True,
          color=BLUE, first=True, space_after=0)
 
     tiles = [
-        (f"{f(n['setu_rmse'])} px", "tie-point RMSE vs truth", GREEN),
-        (pc(n["setu_prec"], 0), "matches within 3 px", GREEN),
-        (f"{n['sift_rmse'] / n['setu_rmse']:.0f}\u00d7", "better than SIFT", GREEN),
-        (f"{f(n['setu_cov'], 2)}", "coverage at 150 pts", GREEN),
+        (f"{f(n['setu_rmse'])} px", "tie-point RMSE vs truth"),
+        (pc(n["setu_prec"], 0), "matches within 3 px"),
+        (f"{n['sift_rmse'] / n['setu_rmse']:.0f}\u00d7", "better than SIFT"),
     ]
-    left = 7.35
-    for value, label, colour in tiles:
-        tile(slide, left, 5.02, 1.40, value, label, colour, size=19)
-        left += 1.40
+    left = 7.95
+    for value, label in tiles:
+        tile(slide, left, 4.90, 1.62, value, label, GREEN, size=19)
+        left += 1.66
 
-    _, tf = textbox(slide, 7.35, 6.02, 5.55, 0.8)
-    rich(tf, [("Every match carries a 2\u00d72 covariance. ", True, INK),
-              ("It weights the fit, sets the outlier threshold, and ships in the "
-               "tie-point file.", False, MUTED)],
-         size=9.2, first=True, space_after=3, line=1.05)
-    rich(tf, [("Uniformity is an objective, not a by-product. ", True, INK),
-              ("Lattice quota over the true overlap; empty cells re-seeded.", False, MUTED)],
-         size=9.2, space_after=0, line=1.05)
+    if n.get("mm_setu") == n.get("mm_setu"):
+        _, tf = textbox(slide, 7.95, 5.82, 4.95, 0.95)
+        rich(tf, [("Multi-modal, the hardest of the three. ", True, ACCENT),
+                  (f"On an IIRS-class sensor gap at a 4\u00d7 scale ratio SETU reaches "
+                   f"{f(n['mm_setu_src'], 2)} px in the source frame "
+                   f"({f(n['mm_setu_m'], 0)} m on the ground). ", False, MUTED),
+                  ("It is the only method that registers these pairs at all: the best "
+                   f"baseline is {f(n['mm_best_other'], 0)} px.", False, MUTED)],
+             size=9.2, first=True, space_after=3, line=1.05)
+        rich(tf, [("Every match carries a 2\u00d72 covariance", True, INK),
+                  (", which weights the fit and ships in the tie-point file.", False, MUTED)],
+             size=9.2, space_after=0, line=1.05)
 
 
 def slide3_technical(slide, n) -> None:
@@ -334,33 +375,43 @@ def slide4_feasibility(slide, n) -> None:
     clear_body(slide)
     set_team_oval(slide)
 
-    band(slide, 0.45, 1.14, 12.45, 1.42, fill=RGBColor(0xFD, 0xEC, 0xF1), line=ACCENT)
-    _, tf = textbox(slide, 0.68, 1.24, 7.0, 0.3)
+    band(slide, 0.45, 1.12, 12.45, 1.36, fill=RGBColor(0xFD, 0xEC, 0xF1), line=ACCENT)
+    _, tf = textbox(slide, 0.68, 1.20, 7.0, 0.3)
     para(tf, "AT AN 8\u00d7 SCALE RATIO, SETU DECLINES RATHER THAN LIES",
          size=9.4, bold=True, color=ACCENT, first=True, space_after=0)
     pic = FIGS / "gate_visual.png"
     if pic.exists():
-        slide.shapes.add_picture(str(pic), Inches(0.62), Inches(1.56), width=Inches(12.1))
+        slide.shapes.add_picture(str(pic), Inches(0.62), Inches(1.50), width=Inches(12.1))
 
     pic = FIGS / "accuracy_bars.png"
     if pic.exists():
-        slide.shapes.add_picture(str(pic), Inches(0.45), Inches(2.86), width=Inches(6.25))
+        slide.shapes.add_picture(str(pic), Inches(0.45), Inches(2.58), width=Inches(6.25))
+    pic = FIGS / "multimodal_bars.png"
+    if pic.exists():
+        slide.shapes.add_picture(str(pic), Inches(0.45), Inches(5.06), width=Inches(6.25))
+
     pic = FIGS / "risk_grid.png"
     if pic.exists():
-        slide.shapes.add_picture(str(pic), Inches(6.95), Inches(2.86), width=Inches(5.95))
+        slide.shapes.add_picture(str(pic), Inches(6.95), Inches(2.58), width=Inches(5.95))
 
-    _, tf = textbox(slide, 0.45, 6.02, 12.45, 0.85)
-    para(tf, "BUILT, NOT DESCRIBED", size=8.8, bold=True, color=BLUE, first=True, space_after=5)
-    left = 0.45
+    _, tf = textbox(slide, 6.95, 5.40, 5.95, 0.3)
+    para(tf, "BUILT, NOT DESCRIBED", size=8.8, bold=True, color=BLUE, first=True, space_after=0)
+    left = 6.95
     for value, label in [
-        ("9 / 9", "stages, both feedback edges"),
+        ("9 / 9", "stages, both edges"),
         ("41", "tests, green"),
         (f"{f(n['setu_t'], 1)} s", "per pair, no GPU"),
-        ("1", "Docker image, CI builds it"),
-        ("12", "methods benchmarked"),
     ]:
-        tile(slide, left, 6.32, 2.45, value, label, GREEN, size=15)
-        left += 2.50
+        tile(slide, left, 5.72, 1.95, value, label, GREEN, size=15)
+        left += 1.98
+
+    if n.get("mm_thermal_pairs"):
+        _, tf = textbox(slide, 6.95, 6.50, 5.95, 0.45)
+        rich(tf, [("Beyond the design target it declines again. ", True, ACCENT),
+                  (f"On thermal-regime bands, which the pseudo-pan window exists to avoid, "
+                   f"every baseline returns garbage at 0% precision and SETU registers "
+                   f"none of the {n['mm_thermal_pairs']} pairs.", False, MUTED)],
+             size=8.6, first=True, space_after=0, line=1.04)
 
 
 def slide5_impact(slide, n) -> None:
@@ -469,6 +520,7 @@ def build_figures(n: dict[str, Any]) -> None:
         accuracy_bars,
         gate_visual,
         illumination_story,
+        multimodal_bars,
         pipeline_diagram,
         qr,
         risk_grid,
@@ -508,6 +560,14 @@ def build_figures(n: dict[str, Any]) -> None:
     rows.sort(key=lambda r: -r[1])
     accuracy_bars(FIGS / "accuracy_bars.png", rows,
                   "Accuracy per tie point, solar azimuth sweep")
+
+    if n.get("mm_rows"):
+        names = {"setu_full": "SETU, complete", "setu_no_reillum": "SETU without re-illumination",
+                 "loftr": "LoFTR", "sift": "SIFT + FLANN", "orb": "ORB + BF",
+                 "rift": "RIFT (PC + MIM)", "cfog": "CFOG template"}
+        multimodal_bars(FIGS / "multimodal_bars.png",
+                        [(names.get(k, k), v) for k, v in n["mm_rows"]],
+                        "Multi-modal: IIRS-class sensor gap at a 4x scale ratio")
 
 
 def illumination_numbers() -> dict[str, float]:

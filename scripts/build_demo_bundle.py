@@ -267,6 +267,7 @@ def _overlay(a: np.ndarray, b: np.ndarray) -> np.ndarray:
 # ------------------------------------------------------------------- eval copy
 
 def copy_eval() -> dict | None:
+    """Fold every evaluation sweep into the one file the site reads."""
     src = ROOT / "runs" / "eval_full"
     metrics = src / "metrics.json"
     if not metrics.exists():
@@ -285,10 +286,23 @@ def copy_eval() -> dict | None:
 
     for png in src.glob("*.png"):
         shutil.copy(png, OUT / png.name)
-
-    dump_json(OUT / "eval.json", doc)
     for md in src.glob("leaderboard*.md"):
         shutil.copy(md, OUT / md.name)
+
+    # The multi-modal sweep lives in its own run directory, because it varies modality
+    # rather than illumination or scale. Folded in here so the site can show it beside
+    # the others rather than as a separate page.
+    mm = ROOT / "runs" / "eval_multimodal"
+    if (mm / "metrics.json").exists():
+        mdoc = json.loads((mm / "metrics.json").read_text())
+        doc["summary_multimodal"] = mdoc["summary"].get("reflected_solar", {})
+        doc["summary_multimodal_thermal"] = mdoc["summary"].get("thermal", {})
+        for png in mm.glob("*.png"):
+            shutil.copy(png, OUT / png.name)
+        for md in mm.glob("leaderboard*.md"):
+            shutil.copy(md, OUT / f"multimodal_{md.name}")
+
+    dump_json(OUT / "eval.json", doc)
     return doc
 
 

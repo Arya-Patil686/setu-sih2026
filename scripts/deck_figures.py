@@ -99,32 +99,69 @@ def illumination_story(path, demo_dir: Path, ncc_opposite: float, ncc_reillum: f
 
 
 def variation_map(path) -> Path:
-    """Three named variations, and which discipline answers each."""
-    fig, ax = plt.subplots(figsize=(6.0, 2.05), facecolor="white")
-    ax.set_xlim(0, 3)
+    """The problem statement's own axes, and which discipline answers each.
+
+    Ordered to mirror the title: multi-modal, Sun angle, scale. Viewpoint is carried along
+    because it falls out of the same projection step that handles scale.
+    """
+    fig, ax = plt.subplots(figsize=(7.6, 2.15), facecolor="white")
+    ax.set_xlim(0, 4)
     ax.set_ylim(0, 1)
     ax.axis("off")
 
     cols = [
-        ("SCALE", "up to 160x", "GEOMETRY", "ortho-project both\nat one GSD", BLUE),
-        ("VIEWPOINT", "tens of degrees", "GEOMETRY", "one map projection\non SLDEM2015", BLUE),
-        ("ILLUMINATION", "any Sun, any time", "PHYSICS", "re-render at the\nsource's own Sun", ACCENT),
+        ("MULTI-MODAL", "OHRC · TMC · IIRS", "PHYSICS +\nSTRUCTURE",
+         "pseudo-pan over the\nreflected-solar window", ACCENT),
+        ("SUN ANGLE", "any Sun, any date", "PHYSICS",
+         "re-render at the\nsource's own Sun", ACCENT),
+        ("SCALE", "up to 160x", "GEOMETRY",
+         "ortho-project both\nat one GSD", BLUE),
+        ("VIEWPOINT", "tens of degrees", "GEOMETRY",
+         "one map projection\non SLDEM2015", BLUE),
     ]
     for i, (name, mag, how, detail, colour) in enumerate(cols):
         x = i + 0.5
-        ax.add_patch(FancyBboxPatch((i + 0.06, 0.52), 0.88, 0.42,
-                                    boxstyle="round,pad=0.012,rounding_size=0.05",
+        ax.add_patch(FancyBboxPatch((i + 0.05, 0.53), 0.90, 0.41,
+                                    boxstyle="round,pad=0.010,rounding_size=0.04",
                                     facecolor="#eef2f7", edgecolor="#c3ccd9", linewidth=1))
-        ax.text(x, 0.80, name, ha="center", fontsize=9, color=INK, fontweight="bold")
-        ax.text(x, 0.62, mag, ha="center", fontsize=7.6, color=MUTED)
-        ax.add_patch(FancyArrowPatch((x, 0.50), (x, 0.40), arrowstyle="-|>",
+        ax.text(x, 0.80, name, ha="center", fontsize=9.2, color=INK, fontweight="bold")
+        ax.text(x, 0.63, mag, ha="center", fontsize=7.6, color=MUTED)
+        ax.add_patch(FancyArrowPatch((x, 0.51), (x, 0.42), arrowstyle="-|>",
                                      mutation_scale=8, color="#8ea2ba", linewidth=1.1))
-        ax.add_patch(FancyBboxPatch((i + 0.06, 0.02), 0.88, 0.36,
-                                    boxstyle="round,pad=0.012,rounding_size=0.05",
+        ax.add_patch(FancyBboxPatch((i + 0.05, 0.02), 0.90, 0.38,
+                                    boxstyle="round,pad=0.010,rounding_size=0.04",
                                     facecolor="#fdf0f4" if colour == ACCENT else "#eef6fc",
                                     edgecolor=colour, linewidth=1.2))
-        ax.text(x, 0.29, how, ha="center", fontsize=8.4, color=colour, fontweight="bold")
-        ax.text(x, 0.13, detail, ha="center", fontsize=7.3, color=MUTED, linespacing=1.25)
+        ax.text(x, 0.30, how, ha="center", fontsize=8.0, color=colour,
+                fontweight="bold", linespacing=1.15)
+        ax.text(x, 0.12, detail, ha="center", fontsize=7.2, color=MUTED, linespacing=1.25)
+    return _save(fig, path)
+
+
+def multimodal_bars(path, rows, subtitle: str) -> Path:
+    """The multi-modal condition, where SETU is the only method that registers at all."""
+    fig, ax = plt.subplots(figsize=(6.15, 1.72), facecolor="white")
+    names = [r[0] for r in rows]
+    vals = [r[1] for r in rows]
+    colours = [GREEN if "SETU" in n else "#9fb0c6" for n in names]
+
+    y = np.arange(len(rows))
+    ax.barh(y, vals, color=colours, height=0.68, edgecolor="none")
+    ax.set_yticks(y)
+    ax.set_yticklabels(names, fontsize=7.6, color=INK)
+    ax.invert_yaxis()
+    ax.set_xscale("log")
+    ax.set_xlabel("tie-point RMSE against exact truth, px (log)", fontsize=7.5, color=MUTED)
+    ax.set_title(subtitle, fontsize=9, color=INK, loc="left", pad=7)
+    ax.tick_params(colors=MUTED, labelsize=7.5)
+    ax.grid(True, axis="x", color=FAINT, linewidth=0.8)
+    ax.set_axisbelow(True)
+    for sp in ("top", "right"):
+        ax.spines[sp].set_visible(False)
+    for sp in ("left", "bottom"):
+        ax.spines[sp].set_color("#c3ccd9")
+    for yi, v in zip(y, vals):
+        ax.text(v * 1.18, yi, f"{v:.3g}", va="center", fontsize=7.3, color=INK)
     return _save(fig, path)
 
 

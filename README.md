@@ -1,9 +1,33 @@
 # SETU
 
-**Sub-pixel multi-sensor registration of Chandrayaan-2 imagery against lunar reference maps.**
-Smart India Hackathon 2026 · Problem Statement 26166 · ISRO / Department of Space.
+Smart India Hackathon 2026 · **Problem Statement 26166** · ISRO / Department of Space
+
+> **Multi-modal, Sun angle and scale invariant image correspondence using Chandrayaan-2
+> optical images (OHRC, TMC and IIRS)**
+
+Sub-pixel correspondence between a Chandrayaan-2 image and a lunar reference map, invariant
+to all three variations the statement names.
 
 > Geometry for scale and viewpoint. Physics for the Sun. Learning only for what is left.
+
+### The three invariances, and where each one lives
+
+| The statement asks for | How SETU gets it | Code |
+|---|---|---|
+| **Multi-modal** | IIRS pseudo-panchromatic synthesis over the reflected-solar window, column destriping, a reference policy that routes each payload to a resolution-appropriate partner, and structural representations that survive non-linear radiometric change | `illum/iirs.py`, `io/registry.py`, `illum/structural.py` |
+| **Sun angle invariant** | The reference is re-rendered under the source image's own solar geometry rather than searched for an invariant descriptor | `illum/render.py` |
+| **Scale invariant** | Both images ortho-projected to one working GSD before matching; the coarser image is never upsampled | `geom/ortho.py`, `geom/prealign.py` |
+
+Measured on the multi-modal axis, which is the hardest of the three: on an IIRS-class
+sensor gap (low SNR, column-striped spectrometer band against a framing camera) at a 4x
+scale ratio, SETU reaches **0.70 px in the source frame, 14 m on the ground**, at 64.5%
+precision. The best baseline manages 311 px. SETU is the only method in the table that
+registers those pairs at all.
+
+Pushed past the design target into the thermal regime, where the source is measuring
+temperature rather than reflected light, every baseline returns garbage at 0% precision
+and **SETU registers none of the ten pairs**. The 900 to 1600 nm pseudo-panchromatic
+window exists precisely to stay out of that regime.
 
 ---
 
