@@ -14,17 +14,18 @@ directly: RMSE against delta sun-elevation, and RMSE against scale ratio.
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass, asdict, field
+from collections.abc import Iterator
+from dataclasses import dataclass, field
 from itertools import product as iproduct
 from pathlib import Path
-from typing import Any, Iterator, Literal
+from typing import Any, Literal
 
 import cv2
 import numpy as np
 from shapely.geometry import Polygon
 
 from setu.bench.degrade import degrade, thermal_like
-from setu.bench.terrain import TerrainPatch, get_terrain
+from setu.bench.terrain import TerrainPatch
 from setu.illum.render import render_dem
 from setu.types import IlluminationState, Product
 

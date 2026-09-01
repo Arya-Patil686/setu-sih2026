@@ -9,9 +9,9 @@ synthetic benchmark renderer all enter the pipeline through it.
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass, field, asdict
-from datetime import datetime, timezone
-from typing import Any, Literal, Optional
+from dataclasses import asdict, dataclass, field
+from datetime import UTC, datetime
+from typing import Any, Literal
 
 import numpy as np
 from shapely.geometry import Polygon, mapping
@@ -318,7 +318,7 @@ class RunResult:
     transform: dict[str, Any]
     config: dict[str, Any]
     stages: list[dict[str, Any]] = field(default_factory=list)
-    created_utc: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    created_utc: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
     @property
     def inliers(self) -> list[TiePoint]:

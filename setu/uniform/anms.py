@@ -8,7 +8,7 @@ quality - so the surviving set is spread across the cell by construction.
 
 from __future__ import annotations
 
-from typing import Sequence
+from collections.abc import Sequence
 
 import numpy as np
 from scipy.spatial import cKDTree

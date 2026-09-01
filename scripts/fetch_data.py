@@ -84,7 +84,7 @@ def download(url: str, dest: Path, expected_sha: str | None = None) -> bool:
 
 
 def report_manual(entry: dict[str, Any]) -> None:
-    print(f"    MANUAL — this archive needs a browser session or an account.")
+    print("    MANUAL — this archive needs a browser session or an account.")
     for key in ("portal", "browse", "mirror"):
         if entry.get(key):
             print(f"      {key}: {entry[key]}")

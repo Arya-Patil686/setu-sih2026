@@ -14,23 +14,22 @@ from __future__ import annotations
 
 import time
 import traceback
+from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass, field
-from typing import Any, Callable, Iterable, Sequence
+from typing import Any
 
 import numpy as np
 
 from setu.bench.generate import BenchPair, apply_h
 from setu.config import SetuConfig
-from setu.eval.baselines import ABLATIONS, ABLATION_LABELS, build_baseline
+from setu.eval.baselines import ABLATION_LABELS, ABLATIONS, build_baseline
 from setu.eval.metrics import (
     bootstrap_ci,
-    ce90,
     clark_evans,
     coverage_ratio,
     match_density,
     occupancy_chi_square,
     residuals,
-    rmse,
     rmse_vs_truth,
     success_rate,
 )
@@ -311,8 +310,11 @@ def aggregate(
         ok = [r for r in rows if r.ok]
         n_failed = len(rows) - len(ok)
 
-        def col(attr: str) -> list[float]:
-            return [getattr(r, attr) for r in ok if np.isfinite(getattr(r, attr))]
+        def col(attr: str, rows_ok: list[PairResult] = ok) -> list[float]:
+            # `rows_ok` is bound at definition time on purpose. Closing over the loop
+            # variable would make every method's summary read from whichever iteration
+            # happened to be last if this were ever evaluated lazily.
+            return [getattr(r, attr) for r in rows_ok if np.isfinite(getattr(r, attr))]
 
         entry: dict[str, Any] = {
             "n_pairs": len(rows),

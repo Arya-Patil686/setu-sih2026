@@ -21,7 +21,7 @@ from typing import Any
 
 import numpy as np
 
-from setu.match.base import MatchSet, Matcher, to_uint8
+from setu.match.base import Matcher, MatchSet, to_uint8
 
 
 def resolve_device(preference: str = "auto") -> str:

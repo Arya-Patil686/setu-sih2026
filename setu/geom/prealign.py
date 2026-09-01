@@ -19,17 +19,16 @@ from dataclasses import dataclass, field
 from typing import Any
 
 import numpy as np
-from pyproj import CRS
 from skimage.registration import phase_cross_correlation
 
 from setu.geom.crs import choose_crs, footprint_extent_km
 from setu.geom.ortho import (
     OrthoGrid,
-    prefilter_for_downsample,
     build_grid,
     footprint_bounds_map,
     intersect_bounds,
     orthorectify,
+    prefilter_for_downsample,
     working_gsd,
 )
 from setu.geom.sensor_model import SensorModel, build_sensor_model

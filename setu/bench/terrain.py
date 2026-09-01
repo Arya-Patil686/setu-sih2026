@@ -157,9 +157,9 @@ def synthetic_terrain(
     # RMS slopes here are the values reported for the corresponding lunar terrain
     # classes from LOLA and NAC DTM analyses at comparable baselines.
     params = {
-        "highland": dict(beta=4.2, slope=11.0, density=2.2e-4),
-        "mare": dict(beta=4.0, slope=3.5, density=6.0e-5),
-        "selfsimilar": dict(beta=4.6, slope=5.0, density=4.0e-4),
+        "highland": {"beta": 4.2, "slope": 11.0, "density": 2.2e-4},
+        "mare": {"beta": 4.0, "slope": 3.5, "density": 6.0e-5},
+        "selfsimilar": {"beta": 4.6, "slope": 5.0, "density": 4.0e-4},
     }[terrain]
 
     base = fractal_surface(size, gsd_m, beta=params["beta"], rms_slope_deg=params["slope"], rng=rng)

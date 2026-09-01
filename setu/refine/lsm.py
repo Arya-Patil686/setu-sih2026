@@ -93,7 +93,8 @@ def least_squares_match(
     it = 0
     rms = np.nan
 
-    for it in range(1, max_iter + 1):
+    for iteration in range(1, max_iter + 1):
+        it = iteration
         sx = p[0] * xc + p[1] * yc + p[2] + cx
         sy = p[3] * xc + p[4] * yc + p[5] + cy
         if not np.isfinite(sx).all() or not np.isfinite(sy).all():

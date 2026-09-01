@@ -17,8 +17,8 @@ from typing import Any
 import cv2
 import numpy as np
 
-from setu.illum.structural import cfog, cfog_similarity, phase_congruency
-from setu.match.base import MatchSet, Matcher, to_uint8
+from setu.illum.structural import cfog, phase_congruency
+from setu.match.base import Matcher, MatchSet, to_uint8
 
 
 class SIFTBaseline(Matcher):
@@ -38,8 +38,8 @@ class SIFTBaseline(Matcher):
         if da is None or db is None or len(ka) < 2 or len(kb) < 2:
             return MatchSet.empty(self.name, matcher=self.name)
 
-        index = dict(algorithm=1, trees=5)
-        flann = cv2.FlannBasedMatcher(index, dict(checks=64))
+        index = {"algorithm": 1, "trees": 5}
+        flann = cv2.FlannBasedMatcher(index, {"checks": 64})
         pairs = flann.knnMatch(da, db, k=2)
 
         src_pts, ref_pts, conf = [], [], []
@@ -120,7 +120,7 @@ class IntFeatBaseline(Matcher):
         if da is None or db is None or len(ka) < 2 or len(kb) < 2:
             return MatchSet.empty(self.name, matcher=self.name)
 
-        flann = cv2.FlannBasedMatcher(dict(algorithm=1, trees=5), dict(checks=64))
+        flann = cv2.FlannBasedMatcher({"algorithm": 1, "trees": 5}, {"checks": 64})
         pairs = flann.knnMatch(da, db, k=2)
         src_pts, ref_pts, conf = [], [], []
         for pair in pairs:
@@ -175,7 +175,7 @@ class CFOGTemplateBaseline(Matcher):
         self.window = window
 
     def match(self, src: np.ndarray, ref: np.ndarray, **kw: Any) -> MatchSet:
-        from setu.match.structural import _correlate_tensor, _parabolic_peak, _peak_sharpness
+        from setu.match.structural import _correlate_tensor, _parabolic_peak
 
         window = int(kw.get("window", self.window))
         h, w = src.shape[:2]

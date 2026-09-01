@@ -122,18 +122,18 @@ def illumination_demo() -> dict:
 # ------------------------------------------------------------ scene registration
 
 SCENES = [
-    dict(key="ohrc_nac", label="OHRC against LRO NAC",
-         blurb="A 30-degree change in solar azimuth at low sun, the case the problem statement calls illumination variation.",
-         src=(105.0, 22.0), ref=(135.0, 22.0), scale=1.0, terrain="highland",
-         src_sensor="OHRC", ref_sensor="NAC_L"),
-    dict(key="hard_sun", label="Opposed illumination",
-         blurb="The stress case: the Sun has moved 90 degrees in azimuth and 45 degrees in elevation between the two acquisitions.",
-         src=(45.0, 15.0), ref=(135.0, 60.0), scale=1.0, terrain="highland",
-         src_sensor="OHRC", ref_sensor="NAC_L"),
-    dict(key="tmc2_scale", label="TMC-2 against NAC, 4x scale",
-         blurb="A fourfold difference in ground sampling distance, absorbed by pre-alignment rather than by the matcher. Accuracy is quoted in reference pixels, so 4x coarser source pixels means the equivalent source-frame error is a quarter of the number shown.",
-         src=(135.0, 30.0), ref=(135.0, 50.0), scale=4.0, terrain="highland",
-         src_sensor="TMC2_NADIR", ref_sensor="NAC_L"),
+    {"key": "ohrc_nac", "label": "OHRC against LRO NAC",
+         "blurb": "A 30-degree change in solar azimuth at low sun, the case the problem statement calls illumination variation.",
+         "src": (105.0, 22.0), "ref": (135.0, 22.0), "scale": 1.0, "terrain": "highland",
+         "src_sensor": "OHRC", "ref_sensor": "NAC_L"},
+    {"key": "hard_sun", "label": "Opposed illumination",
+         "blurb": "The stress case: the Sun has moved 90 degrees in azimuth and 45 degrees in elevation between the two acquisitions.",
+         "src": (45.0, 15.0), "ref": (135.0, 60.0), "scale": 1.0, "terrain": "highland",
+         "src_sensor": "OHRC", "ref_sensor": "NAC_L"},
+    {"key": "tmc2_scale", "label": "TMC-2 against NAC, 4x scale",
+         "blurb": "A fourfold difference in ground sampling distance, absorbed by pre-alignment rather than by the matcher. Accuracy is quoted in reference pixels, so 4x coarser source pixels means the equivalent source-frame error is a quarter of the number shown.",
+         "src": (135.0, 30.0), "ref": (135.0, 50.0), "scale": 4.0, "terrain": "highland",
+         "src_sensor": "TMC2_NADIR", "ref_sensor": "NAC_L"},
 ]
 
 

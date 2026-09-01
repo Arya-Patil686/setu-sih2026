@@ -104,7 +104,7 @@ def embree_shadow(
 ) -> np.ndarray:
     """Ray-traced shadows through `trimesh`, when the optional backend is installed."""
     try:
-        import trimesh
+        pass
     except Exception as exc:                                  # pragma: no cover
         raise RuntimeError(
             "The Embree shadow backend needs `trimesh`. The horizon sweep is the "

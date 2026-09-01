@@ -13,8 +13,9 @@ pointing stability, extracted from the registration as a by-product.
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Any, Sequence
+from typing import Any
 
 import numpy as np
 from scipy.interpolate import LSQUnivariateSpline

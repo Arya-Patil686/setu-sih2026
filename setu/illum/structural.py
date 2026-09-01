@@ -240,7 +240,6 @@ def cfog(
     img = _prep(image)
     gx = cv2.Sobel(img, cv2.CV_32F, 1, 0, ksize=3)
     gy = cv2.Sobel(img, cv2.CV_32F, 0, 1, ksize=3)
-    mag = np.sqrt(gx * gx + gy * gy)
 
     channels = np.empty((img.shape[0], img.shape[1], n_orient), np.float32)
     for o in range(n_orient):

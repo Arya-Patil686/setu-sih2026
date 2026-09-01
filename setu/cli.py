@@ -18,7 +18,6 @@ import sys
 import time
 import warnings
 from pathlib import Path
-from typing import Optional
 
 import typer
 from rich.console import Console
@@ -48,10 +47,10 @@ def register(
     source: Path = typer.Option(..., "--source", help="Source product (PDS4 xml, PDS3 lbl, or GeoTIFF)."),
     reference: Path = typer.Option(..., "--reference", help="Reference product."),
     out: Path = typer.Option(..., "--out", help="Run directory to write."),
-    dem: Optional[Path] = typer.Option(None, "--dem", help="Shape model (SLDEM2015 tile or NAC DTM)."),
-    config: Optional[Path] = typer.Option(None, "--config", help="Experiment YAML."),
-    source_sensor: Optional[str] = typer.Option(None, "--source-sensor"),
-    reference_sensor: Optional[str] = typer.Option(None, "--reference-sensor"),
+    dem: Path | None = typer.Option(None, "--dem", help="Shape model (SLDEM2015 tile or NAC DTM)."),
+    config: Path | None = typer.Option(None, "--config", help="Experiment YAML."),
+    source_sensor: str | None = typer.Option(None, "--source-sensor"),
+    reference_sensor: str | None = typer.Option(None, "--reference-sensor"),
     no_products: bool = typer.Option(False, "--no-products", help="Metrics only; skip rasters and previews."),
 ) -> None:
     """Register one source image against one reference image."""
@@ -125,7 +124,7 @@ def _print_metrics(m: dict) -> None:
 @bench_app.command("generate")
 def bench_generate(
     out: Path = typer.Option(..., "--out", help="Directory to write the benchmark into."),
-    dem: Optional[Path] = typer.Option(None, "--dem", help="DEM tile; synthesised if absent."),
+    dem: Path | None = typer.Option(None, "--dem", help="DEM tile; synthesised if absent."),
     sun_elev: str = typer.Option("10,20,30,45,60,75", "--sun-elev"),
     sun_az: str = typer.Option("0,45,90,135,180,225,270,315", "--sun-az"),
     scale: str = typer.Option("1,2,4,8,16", "--scale"),
@@ -134,7 +133,7 @@ def bench_generate(
     size: int = typer.Option(1536, "--size", help="DEM edge in pixels."),
     gsd: float = typer.Option(5.0, "--gsd", help="DEM ground sampling distance, metres."),
     tile: int = typer.Option(512, "--tile"),
-    limit: Optional[int] = typer.Option(None, "--limit", help="Cap the number of pairs."),
+    limit: int | None = typer.Option(None, "--limit", help="Cap the number of pairs."),
 ) -> None:
     """Generate the controlled benchmark with exact ground truth."""
     from setu.bench.generate import full_grid, write_bench
@@ -157,9 +156,9 @@ def bench_generate(
 @app.command("eval")
 def evaluate(
     out: Path = typer.Option(..., "--out", help="Directory for the leaderboard and plots."),
-    manifest: Optional[Path] = typer.Option(None, "--manifest", help="Benchmark manifest.json."),
+    manifest: Path | None = typer.Option(None, "--manifest", help="Benchmark manifest.json."),
     methods: str = typer.Option("all", "--methods", help="Comma-separated, or 'all'."),
-    config: Optional[Path] = typer.Option(None, "--config"),
+    config: Path | None = typer.Option(None, "--config"),
     sun_sweep: bool = typer.Option(True, "--sun-sweep/--no-sun-sweep"),
     scale_sweep_flag: bool = typer.Option(True, "--scale-sweep/--no-scale-sweep"),
     terrain: str = typer.Option("highland", "--terrain"),
@@ -239,9 +238,9 @@ def serve(
     """Start the API and serve the web demo."""
     try:
         import uvicorn
-    except ImportError:
+    except ImportError as exc:
         console.print("[red]uvicorn is not installed.[/]  pip install 'setu[api]'")
-        raise typer.Exit(1)
+        raise typer.Exit(1) from exc
 
     console.print(f"[bold]SETU[/] serving on [cyan]http://{host}:{port}[/]")
     uvicorn.run("api.main:app", host=host, port=port, reload=reload)

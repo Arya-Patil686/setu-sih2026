@@ -17,7 +17,6 @@ from pathlib import Path
 warnings.filterwarnings("ignore")
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-import numpy as np
 
 from setu.bench.generate import make_pair, scale_sweep
 from setu.bench.terrain import synthetic_terrain

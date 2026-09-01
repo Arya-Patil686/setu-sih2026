@@ -17,9 +17,10 @@ both narrate the run from the same source rather than from a re-derivation of it
 from __future__ import annotations
 
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from typing import Any, Callable
+from datetime import UTC, datetime
+from typing import Any
 
 import numpy as np
 
@@ -92,7 +93,7 @@ class Pipeline:
     ) -> RunResult:
         """Register `source` against `reference` and return everything the run produced."""
         started = time.perf_counter()
-        run_id = run_id or f"{source.pid}__{reference.pid}__{datetime.now(timezone.utc):%Y%m%dT%H%M%SZ}"
+        run_id = run_id or f"{source.pid}__{reference.pid}__{datetime.now(UTC):%Y%m%dT%H%M%SZ}"
 
         # ---------------------------------------------------------- S0 ingest
         self._begin("S0", "Ingest")
@@ -426,7 +427,7 @@ class Pipeline:
     # ----------------------------------------------------------------- metrics
 
     def _metrics(self, result, pre, source, reference, elapsed: float) -> dict[str, Any]:
-        from setu.eval.metrics import ce90, match_density, runtime_per_megapixel
+        from setu.eval.metrics import match_density, runtime_per_megapixel
 
         tiepoints: list[TiePoint] = result["tiepoints"]
         inliers = [t for t in tiepoints if t.inlier]

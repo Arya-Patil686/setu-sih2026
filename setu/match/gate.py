@@ -14,10 +14,10 @@ cleaner than either alone, and the agreement rate is itself a diagnostic worth r
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Any, Callable
+from typing import Any
 
-import cv2
 import numpy as np
 from scipy.spatial import cKDTree
 

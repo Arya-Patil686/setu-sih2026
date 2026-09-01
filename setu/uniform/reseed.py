@@ -18,14 +18,15 @@ texture, and forcing a point into it would be manufacturing a correspondence.
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Any, Sequence
+from typing import Any
 
 import numpy as np
 
 from setu.bench.generate import apply_h
 from setu.match.base import MatchSet
-from setu.match.structural import StructuralMatcher, template_refine
+from setu.match.structural import template_refine
 from setu.types import TiePoint
 from setu.uniform.lattice import Lattice
 
@@ -176,7 +177,7 @@ def apply_quota(
         by_cell.setdefault(t.cell_id, []).append(t)
 
     kept: list[TiePoint] = []
-    for cell, pts in by_cell.items():
+    for _cell, pts in by_cell.items():
         pts.sort(key=lambda t: t.quality, reverse=True)
         kept.extend(anms_select(pts, per_cell, min_radius_px=anms_radius_px))
     return kept

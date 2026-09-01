@@ -10,12 +10,13 @@ order can fall through to the next tier and, finally, fail loudly.
 from __future__ import annotations
 
 import re
+from collections.abc import Iterable
 from datetime import datetime
-from typing import Any, Iterable
+from typing import Any
 
 import numpy as np
 
-from setu.types import IllumUnknownError, IlluminationState
+from setu.types import IlluminationState, IllumUnknownError
 
 #: Ordered aliases per quantity. First hit wins, so mission-specific spellings come first.
 ALIASES: dict[str, tuple[str, ...]] = {

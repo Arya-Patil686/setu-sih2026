@@ -18,7 +18,7 @@ from shapely.geometry import Polygon
 
 from setu.geom.crs import map_to_lonlat, moon_geographic_crs
 from setu.io.labels import illumination_from_label
-from setu.types import IlluminationState, NOMINAL_GSD_M, Product
+from setu.types import NOMINAL_GSD_M, IlluminationState, Product
 
 
 def read_geotiff(
@@ -118,18 +118,18 @@ def write_geotiff(
         arr = arr[None, :, :]
     out_dtype = dtype or ("float32" if arr.dtype.kind == "f" else str(arr.dtype))
 
-    profile: dict[str, Any] = dict(
-        driver="GTiff",
-        height=arr.shape[1],
-        width=arr.shape[2],
-        count=arr.shape[0],
-        dtype=out_dtype,
-        crs=crs,
-        transform=transform,
-        nodata=nodata,
-        compress="deflate",
-        predictor=3 if out_dtype.startswith("float") else 2,
-    )
+    profile: dict[str, Any] = {
+        "driver": "GTiff",
+        "height": arr.shape[1],
+        "width": arr.shape[2],
+        "count": arr.shape[0],
+        "dtype": out_dtype,
+        "crs": crs,
+        "transform": transform,
+        "nodata": nodata,
+        "compress": "deflate",
+        "predictor": 3 if out_dtype.startswith("float") else 2,
+    }
     if cog:
         profile.update(tiled=True, blockxsize=512, blockysize=512, BIGTIFF="IF_SAFER")
 

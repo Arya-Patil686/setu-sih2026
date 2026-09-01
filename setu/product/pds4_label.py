@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import xml.dom.minidom as minidom
 import xml.etree.ElementTree as ET
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -55,7 +55,7 @@ def build_label(
 
     modif = _el(ident, "Modification_History")
     detail = _el(modif, "Modification_Detail")
-    _el(detail, "modification_date", datetime.now(timezone.utc).strftime("%Y-%m-%d"))
+    _el(detail, "modification_date", datetime.now(UTC).strftime("%Y-%m-%d"))
     _el(detail, "version_id", "1.0")
     _el(detail, "description",
         "Sub-pixel co-registration by SETU. Source resampled into the reference map "
@@ -136,7 +136,7 @@ def build_label(
     fao = _el(root, "File_Area_Observational")
     f = _el(fao, "File")
     _el(f, "file_name", Path(raster_path).name)
-    _el(f, "creation_date_time", datetime.now(timezone.utc).isoformat())
+    _el(f, "creation_date_time", datetime.now(UTC).isoformat())
 
     arr = _el(fao, "Array_2D_Image")
     _el(arr, "offset", "0", unit="byte")

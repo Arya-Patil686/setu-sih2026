@@ -27,7 +27,7 @@ import numpy as np
 from scipy.spatial import cKDTree
 
 from setu.illum.structural import cfog, mim_response, phase_congruency
-from setu.match.base import MatchSet, Matcher
+from setu.match.base import Matcher, MatchSet
 
 EPS = 1e-10
 
@@ -220,6 +220,13 @@ def match_descriptors(
 
 # ------------------------------------------------------------------- refine
 
+def _skip(refined_ref: list, peaks: list, sharpness: list, xr: float, yr: float) -> None:
+    """Record a candidate that could not be refined, keeping the three lists aligned."""
+    refined_ref.append((xr, yr))
+    peaks.append(0.0)
+    sharpness.append(0.0)
+
+
 def template_refine(
     src_repr: np.ndarray,
     ref_repr: np.ndarray,
@@ -252,20 +259,20 @@ def template_refine(
     for (xs, ys), (xr, yr) in zip(np.atleast_2d(pts_src), np.atleast_2d(pts_ref)):
         c0, r0 = int(round(xs)) - half_p, int(round(ys)) - half_p
         if c0 < 0 or r0 < 0 or r0 + patch > src_t.shape[0] or c0 + patch > src_t.shape[1]:
-            refined_ref.append((xr, yr)); peaks.append(0.0); sharpness.append(0.0)
+            _skip(refined_ref, peaks, sharpness, xr, yr)
             continue
         templ = src_t[r0:r0 + patch, c0:c0 + patch]
 
         sc0, sr0 = int(round(xr)) - half_p - half_w, int(round(yr)) - half_p - half_w
         sc1, sr1 = sc0 + patch + window, sr0 + patch + window
         if sc0 < 0 or sr0 < 0 or sr1 > ref_t.shape[0] or sc1 > ref_t.shape[1]:
-            refined_ref.append((xr, yr)); peaks.append(0.0); sharpness.append(0.0)
+            _skip(refined_ref, peaks, sharpness, xr, yr)
             continue
         search = ref_t[sr0:sr1, sc0:sc1]
 
         surface = _correlate_tensor(search, templ)
         if surface.size == 0:
-            refined_ref.append((xr, yr)); peaks.append(0.0); sharpness.append(0.0)
+            _skip(refined_ref, peaks, sharpness, xr, yr)
             continue
 
         pk = np.unravel_index(int(np.argmax(surface)), surface.shape)

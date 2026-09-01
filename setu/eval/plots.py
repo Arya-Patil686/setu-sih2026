@@ -6,10 +6,12 @@ challenges. These plots answer both directly, on data whose ground truth is exac
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Any, Sequence
+from typing import Any
 
 import matplotlib
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
@@ -21,8 +23,8 @@ from setu.eval.runner import PairResult
 #: borrowed from somewhere else, which is the opposite of the impression a results plot
 #: should give.
 THEMES = {
-    "dark": dict(bg="#05070c", fg="#e8eef7", muted="#8b9bb4", grid="#141d2b", spine="#1e2a3c"),
-    "light": dict(bg="#ffffff", fg="#12233d", muted="#41546f", grid="#e6ebf2", spine="#c3ccd9"),
+    "dark": {"bg": "#05070c", "fg": "#e8eef7", "muted": "#8b9bb4", "grid": "#141d2b", "spine": "#1e2a3c"},
+    "light": {"bg": "#ffffff", "fg": "#12233d", "muted": "#41546f", "grid": "#e6ebf2", "spine": "#c3ccd9"},
 }
 INK = THEMES["dark"]["bg"]
 FG = THEMES["dark"]["fg"]

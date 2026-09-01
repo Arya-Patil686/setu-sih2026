@@ -23,7 +23,7 @@ sys.path.insert(0, str(ROOT))
 
 from pptx import Presentation
 from pptx.dml.color import RGBColor
-from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
+from pptx.enum.text import MSO_ANCHOR, PP_ALIGN
 from pptx.util import Emu, Inches, Pt
 
 TEMPLATE = Path("/Users/arya/Downloads/1787777508931-b8f8d32e9bed-SIH2026-IDEA-Presentation-Format.pptx")
@@ -617,7 +617,6 @@ def slide6_research(slide, n) -> None:
 
 def build_figures(n: dict[str, Any]) -> None:
     """Render the two figures the deck places, on white to match the template."""
-    import numpy as np
 
     from scripts.deck_figures import accuracy_bars, pipeline_diagram
 
@@ -643,7 +642,6 @@ def build_figures(n: dict[str, Any]) -> None:
 
 def illumination_numbers() -> dict[str, float]:
     """The two correlation figures quoted on slide 2, recomputed rather than remembered."""
-    import numpy as np
 
     from setu.bench.generate import make_pair
     from setu.bench.terrain import synthetic_terrain

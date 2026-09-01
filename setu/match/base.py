@@ -45,18 +45,18 @@ class MatchSet:
     def is_empty(self) -> bool:
         return len(self) == 0
 
-    def top(self, n: int) -> "MatchSet":
+    def top(self, n: int) -> MatchSet:
         """The n highest-confidence correspondences."""
         if len(self) <= n:
             return self
         idx = np.argsort(self.conf)[::-1][:n]
         return MatchSet(self.kpts_src[idx], self.kpts_ref[idx], self.conf[idx], self.track, dict(self.meta))
 
-    def filter(self, mask: np.ndarray) -> "MatchSet":
+    def filter(self, mask: np.ndarray) -> MatchSet:
         m = np.asarray(mask, dtype=bool)
         return MatchSet(self.kpts_src[m], self.kpts_ref[m], self.conf[m], self.track, dict(self.meta))
 
-    def offset(self, d_src: tuple[float, float] = (0.0, 0.0), d_ref: tuple[float, float] = (0.0, 0.0)) -> "MatchSet":
+    def offset(self, d_src: tuple[float, float] = (0.0, 0.0), d_ref: tuple[float, float] = (0.0, 0.0)) -> MatchSet:
         """Shift both point sets, used to lift tile-local coordinates back to full-image."""
         return MatchSet(
             self.kpts_src + np.asarray(d_src, dtype=np.float64),
@@ -65,11 +65,11 @@ class MatchSet:
         )
 
     @staticmethod
-    def empty(track: str = "A", **meta: Any) -> "MatchSet":
+    def empty(track: str = "A", **meta: Any) -> MatchSet:
         return MatchSet(np.zeros((0, 2)), np.zeros((0, 2)), np.zeros(0), track, meta)
 
     @staticmethod
-    def concat(sets: list["MatchSet"], track: str | None = None) -> "MatchSet":
+    def concat(sets: list[MatchSet], track: str | None = None) -> MatchSet:
         sets = [s for s in sets if not s.is_empty]
         if not sets:
             return MatchSet.empty(track or "A")
@@ -84,7 +84,7 @@ class MatchSet:
             merged,
         )
 
-    def deduplicate(self, radius_px: float = 2.0) -> "MatchSet":
+    def deduplicate(self, radius_px: float = 2.0) -> MatchSet:
         """Collapse near-duplicate source points, keeping the highest confidence.
 
         Tiles overlap by half their width, so the same feature is found several times.

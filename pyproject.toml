@@ -51,3 +51,21 @@ filterwarnings = ["ignore::DeprecationWarning"]
 [tool.ruff]
 line-length = 110
 target-version = "py311"
+
+[tool.ruff.lint]
+# Correctness and obvious mistakes, not house style. This codebase deliberately imports
+# inside functions in several places to keep torch, rasterio and matplotlib off the import
+# path of anyone who only wants the classical track, so the rules that forbid that are off.
+select = ["E", "F", "W", "I", "UP", "B", "C4"]
+ignore = [
+  "E501",    # line length is handled by the formatter, not by failing the build
+  "E741",    # `l` reads fine as a regularisation parameter in the spline code
+  "B008",    # FastAPI's Depends/File/Form idiom is a call in a default argument
+  "B905",    # zip(strict=) adds noise to paired iteration over arrays of known length
+  "UP038",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["E402"]
+"experiments/*" = ["E402"]
+"scripts/*" = ["E402"]

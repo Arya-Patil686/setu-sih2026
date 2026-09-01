@@ -210,7 +210,7 @@ class SetuConfig(BaseSettings):
     bench: BenchConfig = Field(default_factory=BenchConfig)
 
     @classmethod
-    def load(cls, path: str | Path | None = None, **overrides: Any) -> "SetuConfig":
+    def load(cls, path: str | Path | None = None, **overrides: Any) -> SetuConfig:
         """Load `configs/default.yaml`, then the named experiment file, then overrides."""
         data: dict[str, Any] = {}
         default = Path(__file__).resolve().parent.parent / "configs" / "default.yaml"

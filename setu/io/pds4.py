@@ -24,7 +24,7 @@ from setu.io.labels import (
     flatten,
     resolve_illumination,
 )
-from setu.types import GeometryCube, NOMINAL_GSD_M, Product
+from setu.types import NOMINAL_GSD_M, GeometryCube, Product
 
 #: Structure names that carry geometry backplanes rather than radiance.
 _BACKPLANE_HINTS = {

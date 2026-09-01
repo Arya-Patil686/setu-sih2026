@@ -4,7 +4,12 @@ import numpy as np
 import pytest
 
 from setu.eval.metrics import (
-    bootstrap_ci, ce90, cross_consistency, rmse, rmse_vs_truth, success_rate,
+    bootstrap_ci,
+    ce90,
+    cross_consistency,
+    rmse,
+    rmse_vs_truth,
+    success_rate,
 )
 
 

@@ -8,9 +8,9 @@ is stronger than one that brute-forces a 160x ratio.
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Callable
 
 from setu.types import Product
 

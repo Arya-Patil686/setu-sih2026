@@ -8,11 +8,12 @@ different products.
 
 from __future__ import annotations
 
-from typing import Any, Sequence
+from collections.abc import Sequence
+from typing import Any
 
 import numpy as np
 
-from setu.eval.metrics import clark_evans, occupancy_chi_square
+from setu.eval.metrics import clark_evans
 from setu.types import TiePoint
 from setu.uniform.lattice import Lattice
 
