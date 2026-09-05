@@ -101,6 +101,33 @@ def rich(tf, parts, size=11, space_after=4, first=False, bullet=False, line=1.0)
     return p
 
 
+def linkline(tf, parts, size=10, space_after=4, first=False, line=1.05,
+             align=None):
+    """A paragraph mixing plain labels with clickable hyperlinks.
+
+    `parts` is a sequence of (text, url_or_None, bold, colour). A real hyperlink is
+    attached rather than styled text, so the URLs are clickable in the exported PDF -
+    which matters, because a judge reading the submission on screen should be one click
+    from the running demo rather than retyping a URL.
+    """
+    para_obj = tf.paragraphs[0] if first else tf.add_paragraph()
+    para_obj.line_spacing = line
+    para_obj.space_after = Pt(space_after)
+    if align is not None:
+        para_obj.alignment = align
+
+    for text, url, bold, colour in parts:
+        run = para_obj.add_run()
+        run.text = text
+        run.font.size = Pt(size)
+        run.font.bold = bold
+        run.font.color.rgb = colour
+        run.font.name = "Calibri"
+        if url:
+            run.hyperlink.address = url
+    return para_obj
+
+
 def band(slide, left, top, width, height, fill=RGBColor(0xEE, 0xF6, 0xFC), line=BLUE):
     from pptx.enum.shapes import MSO_SHAPE
 
@@ -285,10 +312,17 @@ def slide1_title(slide, n) -> None:
                  size=12 if k != "Problem Statement Title" else 10.5,
                  space_after=9, first=(i == 0), bullet=True, line=1.05)
 
-    _, tf = textbox(slide, 0.36, 6.05, 6.9, 1.1)
-    para(tf, "SETU", size=22, bold=True, color=DARKBLUE, space_after=2, first=True)
+    _, tf = textbox(slide, 0.36, 5.86, 9.6, 1.5)
+    para(tf, "SETU", size=21, bold=True, color=DARKBLUE, space_after=2, first=True)
     para(tf, "Geometry for scale and viewpoint. Physics for the Sun. "
-             "Learning only for what is left.", size=11.5, italic=True, color=BLUE)
+             "Learning only for what is left.", size=11, italic=True, color=BLUE,
+         space_after=7)
+    linkline(tf, [
+        ("Live demo   ", None, True, INK),
+        (LIVE_URL, LIVE_URL, False, BLUE),
+        ("      Code   ", None, True, INK),
+        (REPO_URL, REPO_URL, False, BLUE),
+    ], size=10, space_after=0)
 
 
 def slide2_idea(slide, n) -> None:
@@ -453,12 +487,14 @@ def slide5_impact(slide, n) -> None:
     pic = FIGS / "qr.png"
     if pic.exists():
         slide.shapes.add_picture(str(pic), Inches(0.68), Inches(5.54), height=Inches(1.08))
-    _, tf = textbox(slide, 1.98, 5.62, 10.8, 1.05)
-    para(tf, "TRY IT LIVE", size=9, bold=True, color=GREEN, space_after=3, first=True)
-    para(tf, LIVE_URL, size=13.5, bold=True, color=GREEN, space_after=3)
+    _, tf = textbox(slide, 1.98, 5.54, 10.8, 1.2)
+    para(tf, "TRY IT LIVE, AND READ THE CODE", size=8.6, bold=True, color=GREEN,
+         space_after=3, first=True)
+    linkline(tf, [(LIVE_URL, LIVE_URL, True, GREEN)], size=12.5, space_after=2)
+    linkline(tf, [(REPO_URL, REPO_URL, True, DARKBLUE)], size=10.5, space_after=3)
     para(tf, "Three registrations at increasing difficulty, the pipeline played stage by "
              "stage, tie points coloured by residual, and the full leaderboard.",
-         size=9, color=MUTED, space_after=0, line=1.05)
+         size=8.6, color=MUTED, space_after=0, line=1.04)
 
 
 def slide6_research(slide, n) -> None:
@@ -496,8 +532,10 @@ def slide6_research(slide, n) -> None:
     _, tf = textbox(slide, 8.58, 2.92, 4.1, 1.25)
     para(tf, "LIVE DEMO", size=8.6, bold=True, color=BLUE, align=PP_ALIGN.CENTER,
          first=True, space_after=3)
-    para(tf, LIVE_URL, size=9.4, bold=True, color=BLUE, align=PP_ALIGN.CENTER, space_after=4)
-    para(tf, REPO_URL, size=8.6, color=MUTED, align=PP_ALIGN.CENTER, space_after=0)
+    linkline(tf, [(LIVE_URL, LIVE_URL, True, BLUE)], size=9.4, space_after=4,
+             align=PP_ALIGN.CENTER)
+    linkline(tf, [(REPO_URL, REPO_URL, False, MUTED)], size=8.6, space_after=0,
+             align=PP_ALIGN.CENTER)
 
     band(slide, 8.35, 4.45, 4.55, 2.15, fill=RGBColor(0xF7, 0xF9, 0xFC), line=RGBColor(0xC3, 0xCC, 0xD9))
     _, tf = textbox(slide, 8.58, 4.60, 4.1, 1.9)
